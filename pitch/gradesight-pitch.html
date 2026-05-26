@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GradeSight — Stream Restoration HUD</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  /* -------- base -------- */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #0a0d0c;
+    color: #f3efe7;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+  }
+  body { font-size: 18px; line-height: 1.45; }
+
+  /* -------- slide deck framework -------- */
+  .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 5vh 7vw;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    background: #0a0d0c;
+  }
+  .slide.active { display: flex; }
+  .slide h1 {
+    font-size: clamp(36px, 5.5vw, 80px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 0.4em;
+    color: #fff;
+  }
+  .slide h2 {
+    font-size: clamp(28px, 3.8vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    margin-bottom: 0.5em;
+    color: #fff;
+  }
+  .slide h3 {
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 700;
+    margin-bottom: 0.35em;
+    color: #ffd66b;
+  }
+  .slide p, .slide li {
+    font-size: clamp(18px, 1.6vw, 24px);
+    color: #d8d3c6;
+    max-width: 1100px;
+  }
+  .slide ul { padding-left: 1.4em; }
+  .slide li { margin-bottom: 0.35em; }
+  .kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ffd66b;
+    margin-bottom: 1em;
+  }
+  .footer {
+    position: absolute;
+    bottom: 1.4rem; left: 7vw; right: 7vw;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.8rem; color: #6a655a; letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .pgnum { font-variant-numeric: tabular-nums; }
+
+  /* -------- accents -------- */
+  .accent { color: #ffd66b; }
+  .green  { color: #5dffa8; }
+  .num    { font-variant-numeric: tabular-nums; }
+  .big    { font-size: clamp(40px, 6vw, 96px); font-weight: 800; line-height: 1; }
+  .huge   { font-size: clamp(56px, 9vw, 140px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; }
+  .strike { text-decoration: line-through; color: #6a655a; }
+
+  /* -------- 2-col grid helpers -------- */
+  .row { display: grid; gap: 4vw; }
+  .row.cols-2 { grid-template-columns: 1fr 1fr; align-items: center; }
+  .row.cols-3 { grid-template-columns: 1fr 1fr 1fr; gap: 2vw; }
+
+  /* -------- AR view simulation -------- */
+  /* The Mentra Mach1 displays text on a small waveguide panel in the upper-center
+     of vision. It's monochrome green. We simulate it on top of a "worksite scene"
+     made of CSS gradients (a cheap fake of looking down into a stream channel
+     from an excavator cab — sky up top, vegetation, dirt, water sliver). */
+  .ar-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+    background:
+      /* dust haze */
+      radial-gradient(ellipse at 50% 70%, rgba(180,140,80,0.08) 0%, transparent 60%),
+      /* bottom: dug dirt */
+      linear-gradient(180deg,
+        #6b8aa8 0%,        /* sky */
+        #889c9a 22%,       /* horizon haze */
+        #4a5d3a 38%,       /* far bank vegetation */
+        #5d6e3a 50%,       /* near bank grass */
+        #6a4f30 62%,       /* exposed earth */
+        #4a3622 78%,       /* deeper dirt */
+        #3a2a18 100%       /* trench bottom */
+      );
+  }
+  /* stream water sliver */
+  .ar-frame::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: 56%;
+    height: 6%;
+    background: linear-gradient(180deg, #4a6b78 0%, #2c4754 100%);
+    opacity: 0.85;
+    transform: skewY(-1deg);
+  }
+  /* excavator boom hint (foreground silhouette) */
+  .ar-frame::after {
+    content: "";
+    position: absolute;
+    left: 60%; right: -10%;
+    bottom: -5%;
+    height: 40%;
+    background: linear-gradient(135deg, #2a2418 0%, #1a160e 100%);
+    transform: rotate(-12deg);
+    border-radius: 20px;
+    opacity: 0.55;
+  }
+  /* the HUD overlay — sits in upper-center, monochrome green, small panel */
+  .hud {
+    position: absolute;
+    top: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 56%;
+    max-width: 72%;
+    padding: 14px 22px;
+    border-radius: 6px;
+    /* faint waveguide background — slight green tint, mostly transparent */
+    background: rgba(8, 30, 16, 0.32);
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(93, 255, 168, 0.18);
+    color: #5dffa8;
+    text-shadow: 0 0 12px rgba(93, 255, 168, 0.55);
+    font-family: "SF Mono", Menlo, "Roboto Mono", Consolas, monospace;
+    font-size: clamp(16px, 1.6vw, 22px);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1.45;
+    text-align: left;
+  }
+  .hud .top { font-size: 1.15em; }
+  .hud .bot { opacity: 0.92; margin-top: 4px; }
+  .hud .warn { color: #ffd66b; text-shadow: 0 0 10px rgba(255,214,107,0.5); margin-top: 4px; font-size: 0.92em; }
+  /* glasses bezel hint — soft vignette around the image */
+  .ar-frame .vignette {
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 120px 30px rgba(0,0,0,0.55);
+    pointer-events: none;
+  }
+  /* speaker icon for ding */
+  .ding-badge {
+    position: absolute;
+    top: 8%; right: 6%;
+    background: rgba(93, 255, 168, 0.15);
+    color: #5dffa8;
+    border: 1px solid rgba(93,255,168,0.4);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(93, 255, 168, 0.5);
+  }
+
+  /* -------- pricing card -------- */
+  .price-card {
+    background: linear-gradient(160deg, #14191a 0%, #0c1011 100%);
+    border: 1px solid #2a3032;
+    border-radius: 18px;
+    padding: 2.4rem 2rem;
+  }
+  .price-card.featured {
+    border-color: #ffd66b;
+    box-shadow: 0 0 0 1px #ffd66b, 0 18px 60px rgba(255,214,107,0.08);
+  }
+  .price-card .label {
+    font-size: 0.85rem; letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 700; color: #ffd66b; margin-bottom: 0.5em;
+  }
+  .price-card .num-big {
+    font-size: clamp(40px, 5vw, 64px); font-weight: 900; letter-spacing: -0.02em;
+    color: #fff; line-height: 1;
+  }
+  .price-card .per { color: #8b857a; font-size: 1.1rem; font-weight: 500; }
+  .price-card ul { margin-top: 1.4rem; padding-left: 1.2em; }
+  .price-card li { font-size: 1rem; color: #cfc9bc; }
+
+  /* -------- callout boxes -------- */
+  .callout {
+    background: linear-gradient(135deg, rgba(255,214,107,0.10) 0%, rgba(255,214,107,0.02) 100%);
+    border-left: 4px solid #ffd66b;
+    padding: 1.2rem 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.2rem;
+  }
+  .callout strong { color: #ffd66b; }
+
+  /* nav buttons */
+  .nav {
+    position: fixed; bottom: 1rem; right: 1rem;
+    display: flex; gap: 8px; z-index: 100;
+  }
+  .nav button {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #f3efe7;
+    width: 44px; height: 44px; border-radius: 999px;
+    font-size: 18px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.16); }
+
+  /* badge */
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 999px;
+    background: rgba(93,255,168,0.15); color: #5dffa8;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em;
+    border: 1px solid rgba(93,255,168,0.3);
+    margin-bottom: 1rem;
+  }
+  .badge.warn { background: rgba(255,214,107,0.15); color: #ffd66b; border-color: rgba(255,214,107,0.3); }
+
+  /* tables */
+  table { border-collapse: collapse; width: 100%; max-width: 900px; margin-top: 1rem; }
+  th, td { padding: 0.7em 1em; text-align: left; border-bottom: 1px solid #2a3032; font-size: 1.05rem; }
+  th { color: #ffd66b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* big logo */
+  .logo {
+    display: inline-flex; align-items: center; gap: 0.5em;
+    font-weight: 900; font-size: clamp(28px, 3vw, 42px); letter-spacing: -0.02em;
+  }
+  .logo .dot {
+    width: 0.8em; height: 0.8em; border-radius: 50%;
+    background: #5dffa8; box-shadow: 0 0 24px rgba(93,255,168,0.6);
+  }
+
+  /* print */
+  @media print {
+    html, body { overflow: visible; height: auto; background: white; }
+    .nav { display: none !important; }
+    .deck { height: auto; width: 100%; }
+    .slide {
+      display: flex !important;
+      position: relative !important;
+      page-break-after: always;
+      width: 100%;
+      height: 100vh;
+      min-height: 700px;
+    }
+    .footer { color: #888; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ============================================================ -->
+<!-- 1. COVER                                                     -->
+<!-- ============================================================ -->
+<section class="slide active" data-title="Cover">
+  <div style="display:flex;flex-direction:column;align-items:flex-start;gap:0.5em;">
+    <div class="logo"><span class="dot"></span>GradeSight</div>
+    <p class="kicker" style="margin-top:1.5em;">Stream Restoration HUD · Smart Glasses for the Field</p>
+    <h1>Dig it right.<br><span class="accent">The first time.</span></h1>
+    <p style="font-size:clamp(20px,2vw,28px);max-width:800px;margin-top:0.5em;color:#cfc9bc;">
+      Survey-grade depth in your field of view.
+      No more squinting at flags. No more "is that good?"
+      Just dig until the glasses say <span class="green">✓ ON GRADE</span>.
+    </p>
+    <div style="margin-top:2.5em;display:flex;gap:1.5em;align-items:center;">
+      <div>
+        <div style="font-size:0.85rem;color:#8b857a;text-transform:uppercase;letter-spacing:0.15em;">Built for</div>
+        <div style="font-size:1.3rem;font-weight:700;">Stream restoration crews</div>
+      </div>
+      <div style="width:1px;height:50px;background:#2a3032;"></div>
+      <div>
+        <div style="font-size:0.85rem;color:#8b857a;text-transform:uppercase;letter-spacing:0.15em;">Works on</div>
+        <div style="font-size:1.3rem;font-weight:700;">Mentra Mach1 + your RTK</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight by Clare</span><span class="pgnum">01</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 2. THE PROBLEM                                               -->
+<!-- ============================================================ -->
+<section class="slide" data-title="Problem">
+  <p class="kicker">Sound familiar?</p>
+  <h2>Stop guessing the depth.</h2>
+  <div class="row cols-2" style="margin-top:1.5em;">
+    <ul style="font-size:clamp(20px,1.9vw,28px);">
+      <li>Survey crew lays out flags Monday morning.</li>
+      <li>Half of 'em get knocked over by lunch.</li>
+      <li>Operator's eyeballing depth off a stake.</li>
+      <li>Foreman climbs in the trench with a tape.</li>
+      <li>Inspector shows up, something's 4 inches off.</li>
+      <li>Re-grade. Re-survey. Re-bill.</li>
+    </ul>
+    <div class="callout" style="font-size:clamp(20px,2vw,28px);">
+      <strong>The math nobody likes:</strong><br><br>
+      One re-grade on a riffle-pool sequence:
+      <span class="huge accent" style="display:block;margin:0.2em 0;">$8,000+</span>
+      …in machine time, fuel, and lost crew-days.
+      And that's a <em>small</em> mistake.
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">02</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 3. THE FIX                                                   -->
+<!-- ============================================================ -->
+<section class="slide" data-title="The Fix">
+  <p class="kicker">Here's the fix</p>
+  <h2>The grade is in the glasses.</h2>
+  <p style="font-size:clamp(22px,2.2vw,32px);max-width:1000px;margin-top:0.5em;">
+    Your survey points get loaded into a pair of smart glasses.
+    Your RTK GPS feeds in live.
+    The operator looks at the trench and the glasses say:
+  </p>
+  <div class="row cols-3" style="margin-top:2em;gap:1.5vw;">
+    <div style="background:rgba(93,255,168,0.08);border:1px solid rgba(93,255,168,0.3);border-radius:14px;padding:1.5em;text-align:center;">
+      <div class="huge green" style="font-size:clamp(36px,5vw,64px);">✓</div>
+      <div style="font-size:1.3rem;font-weight:700;margin-top:0.5em;">ON GRADE</div>
+      <div style="color:#8b857a;font-size:1rem;">Hold there. <span class="green">Ding.</span></div>
+    </div>
+    <div style="background:rgba(255,214,107,0.06);border:1px solid rgba(255,214,107,0.25);border-radius:14px;padding:1.5em;text-align:center;">
+      <div class="huge accent" style="font-size:clamp(36px,5vw,64px);">↓</div>
+      <div style="font-size:1.3rem;font-weight:700;margin-top:0.5em;">DIG 18 cm</div>
+      <div style="color:#8b857a;font-size:1rem;">Bucket goes down.</div>
+    </div>
+    <div style="background:rgba(255,214,107,0.06);border:1px solid rgba(255,214,107,0.25);border-radius:14px;padding:1.5em;text-align:center;">
+      <div class="huge accent" style="font-size:clamp(36px,5vw,64px);">↑</div>
+      <div style="font-size:1.3rem;font-weight:700;margin-top:0.5em;">FILL 12 cm</div>
+      <div style="color:#8b857a;font-size:1rem;">Add material.</div>
+    </div>
+  </div>
+  <p style="font-size:clamp(18px,1.6vw,24px);margin-top:2em;color:#cfc9bc;max-width:1000px;">
+    No app to swipe. No tablet to drop in the mud. No tape measure.
+    Just look up, read it, dig.
+  </p>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">03</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 4. HOW IT WORKS                                              -->
+<!-- ============================================================ -->
+<section class="slide" data-title="How it works">
+  <p class="kicker">Three steps. That's it.</p>
+  <h2>How it works in the field.</h2>
+  <div class="row cols-3" style="margin-top:1.5em;">
+    <div>
+      <div class="big accent">1</div>
+      <h3 style="margin-top:0.3em;">Upload your dig points</h3>
+      <p>Drop in a CSV or GeoJSON from your survey or design file. Each point has a target depth. Done.</p>
+    </div>
+    <div>
+      <div class="big accent">2</div>
+      <h3 style="margin-top:0.3em;">Pair the RTK receiver</h3>
+      <p>Your existing Leidos / Trimble / Topcon RTK pairs over Bluetooth. We don't sell you new GPS — we use yours.</p>
+    </div>
+    <div>
+      <div class="big accent">3</div>
+      <h3 style="margin-top:0.3em;">Dig until it dings</h3>
+      <p>Operator wears the glasses, walks the trench, and runs the bucket. The HUD calls out depth in real time.</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:2em;">
+    <strong>What about RTK accuracy?</strong>
+    GradeSight reads your RTK fix quality. If it drops to <em>float</em>, you get a ⚠ warning so you don't pour bad data into the ground. We trust the same fix your surveyor trusts.
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">04</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 5. AR VIEW: APPROACH                                         -->
+<!-- ============================================================ -->
+<section class="slide" data-title="AR: Approach">
+  <p class="kicker">What the operator sees · 1 of 4</p>
+  <h2>Walking up to the next dig.</h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div class="ar-frame">
+      <div class="hud">
+        <div class="top">→ M04  12 o'clock 4.2 m  ·  3/12</div>
+        <div class="bot">Pool entrance · brg 47°</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+    <div>
+      <h3>Approach mode</h3>
+      <ul>
+        <li><strong>→ M04</strong> — next dig point, by ID</li>
+        <li><strong>12 o'clock 4.2 m</strong> — straight ahead, 14 ft out</li>
+        <li><strong>3/12</strong> — done with 3 of today's 12 dig points</li>
+        <li><strong>Pool entrance</strong> — your label from the design file</li>
+      </ul>
+      <p style="margin-top:1em;color:#cfc9bc;">
+        No more "where's flag M04?" The glasses point you to it like the operator's looking through them. Walk, don't search.
+      </p>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">05</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6. AR VIEW: TOO HIGH                                         -->
+<!-- ============================================================ -->
+<section class="slide" data-title="AR: Too High">
+  <p class="kicker">What the operator sees · 2 of 4</p>
+  <h2>Too high? Dig more.</h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div class="ar-frame">
+      <div class="hud">
+        <div class="top">✗ ↓ TOO HIGH  M04  ·  3/12</div>
+        <div class="bot">↓ DIG 18 cm  (+0.18 m)</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+    <div>
+      <h3>Too high — dig down</h3>
+      <ul>
+        <li><strong>↓</strong> — arrow points the way the bucket needs to move</li>
+        <li><strong>DIG 18 cm</strong> — exactly how much more to take out</li>
+        <li>Updates 4× per second as the bucket moves</li>
+        <li>Glasses are <em>monochrome green</em>, so we use big symbols, not red/green colors</li>
+      </ul>
+      <div class="callout" style="margin-top:1em;">
+        <strong>Voice cue:</strong> "Dig eighteen centimeters." Hands stay on the joysticks. Eyes stay on the trench.
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">06</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 7. AR VIEW: ON GRADE                                         -->
+<!-- ============================================================ -->
+<section class="slide" data-title="AR: On Grade">
+  <p class="kicker">What the operator sees · 3 of 4</p>
+  <h2>On grade. <span class="green">DING.</span></h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div class="ar-frame">
+      <div class="hud">
+        <div class="top">✓ ON GRADE  M04  ·  3/12</div>
+        <div class="bot">Δ +0.012 m   HOLD<br>short-press = mark done</div>
+      </div>
+      <div class="ding-badge">🔔 DING</div>
+      <div class="vignette"></div>
+    </div>
+    <div>
+      <h3>You hit it</h3>
+      <ul>
+        <li><strong>✓ ON GRADE</strong> — within ±5 cm of design depth</li>
+        <li><strong>Δ +0.012 m</strong> — you're 12 mm above. Within tolerance. Stop.</li>
+        <li>A short two-tone <strong class="green">ding</strong> plays — you don't even have to look up to know</li>
+        <li><strong>Short-press the button</strong> — marks it done, glasses jump to the next point</li>
+      </ul>
+      <p style="margin-top:1em;color:#cfc9bc;">
+        That single sound saves the operator from second-guessing every scoop. They learn it in 5 minutes.
+      </p>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">07</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 8. AR VIEW: TOO DEEP                                         -->
+<!-- ============================================================ -->
+<section class="slide" data-title="AR: Too Deep">
+  <p class="kicker">What the operator sees · 4 of 4</p>
+  <h2>Went too deep? Fill it.</h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div class="ar-frame">
+      <div class="hud">
+        <div class="top">✗ ↑ TOO DEEP  M04  ·  3/12</div>
+        <div class="bot">↑ FILL 12 cm  (-0.12 m)</div>
+        <div class="warn">⚠ vAcc ±8 cm</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+    <div>
+      <h3>Too deep — bring it up</h3>
+      <ul>
+        <li><strong>↑ FILL 12 cm</strong> — backfill or grade up that much</li>
+        <li><strong>⚠ vAcc ±8 cm</strong> — your RTK fix isn't great right now (cell tower blocked? trees?). Don't trust depth tighter than 8 cm until it clears.</li>
+        <li>The glasses warn you <em>before</em> you commit to a bad number</li>
+      </ul>
+      <div class="callout" style="margin-top:1em;">
+        This is the kind of save that pays for the system. One avoided over-dig = months of subscription.
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">08</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 9. THE BUTTON + AS-BUILT                                    -->
+<!-- ============================================================ -->
+<section class="slide" data-title="As-Built">
+  <p class="kicker">Bonus: paperwork is free</p>
+  <h2>Your as-built builds itself.</h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div>
+      <p>Every time the operator marks a point done, GradeSight writes a row to a CSV:</p>
+      <ul style="margin-top:0.8em;">
+        <li>Time, marker ID, label</li>
+        <li>Target depth vs. <em>actual</em> depth</li>
+        <li>Cut/fill in cm</li>
+        <li>RTK fix quality + accuracy</li>
+        <li>Lat/lon of the point and the operator</li>
+      </ul>
+      <p style="margin-top:1em;">
+        At the end of the day, download one file. Drop it in your permitting binder, your NRCS 580 closeout, your GIS layer.
+      </p>
+      <div class="callout" style="margin-top:1em;">
+        <strong>What this saves you:</strong> a day or two of someone reconstructing as-built records from notebook scribbles. Every job. For free.
+      </div>
+    </div>
+    <div style="background:#0c1011;border:1px solid #2a3032;border-radius:12px;padding:1.5em;font-family:'SF Mono',Menlo,monospace;font-size:0.78rem;color:#8aff7b;line-height:1.6;overflow:hidden;">
+      <div style="color:#ffd66b;margin-bottom:0.5em;">asbuilt-clare-2026-05-15.csv</div>
+      time,id,target_m,actual_m,cut_fill_cm,fix,vacc_cm<br>
+      08:14,M01,12.450,12.452,+0.2,FIX,1.8<br>
+      08:31,M02,12.420,12.418,-0.2,FIX,1.7<br>
+      08:47,M03,12.400,12.405,+0.5,FIX,2.1<br>
+      09:02,M04,12.380,12.392,+1.2,FIX,1.9<br>
+      09:21,M05,12.360,12.358,-0.2,FIX,1.8<br>
+      09:38,M06,12.340,12.349,+0.9,FIX,2.0<br>
+      09:55,M07,12.320,12.319,-0.1,FIX,1.7<br>
+      10:12,M08,12.300,12.305,+0.5,FIX,1.9<br>
+      10:30,M09,12.280,12.276,-0.4,FIX,2.2<br>
+      10:48,M10,12.260,12.262,+0.2,FIX,1.8<br>
+      <span style="color:#5dffa8;">...12 of 12 done.</span>
+    </div>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">09</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 10. PRICING                                                  -->
+<!-- ============================================================ -->
+<section class="slide" data-title="Pricing">
+  <p class="kicker">Pricing — straight numbers, no fine print</p>
+  <h2>What it costs.</h2>
+  <div class="row cols-2" style="margin-top:1em;gap:2vw;">
+
+    <div class="price-card">
+      <div class="label">One-time per kit</div>
+      <div class="num-big">$1,495</div>
+      <div class="per">per glasses kit · paid once</div>
+      <ul>
+        <li>Mentra Mach1 display glasses</li>
+        <li>Bluetooth bridge dongle for your RTK</li>
+        <li>Hard case + spare lens covers</li>
+        <li>Half-day on-site setup &amp; training</li>
+        <li>1-year hardware warranty</li>
+      </ul>
+    </div>
+
+    <div class="price-card featured">
+      <div class="label">Subscription · per active operator</div>
+      <div class="num-big">$99<span class="per"> / month</span></div>
+      <div class="per">paused free for any month a kit isn't used</div>
+      <ul>
+        <li>The GradeSight app + cloud sync</li>
+        <li>Unlimited dig points &amp; sites</li>
+        <li>As-built CSV exports</li>
+        <li>RTK fix-quality monitoring</li>
+        <li>Voice cues, ding, button mark-done</li>
+        <li>Updates &amp; support</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5em;display:flex;gap:1em;align-items:center;flex-wrap:wrap;">
+    <span class="badge">Crew pack: 5 operators for $399 / mo ($79.80 / op)</span>
+    <span class="badge" style="background:rgba(255,214,107,0.15);color:#ffd66b;border-color:rgba(255,214,107,0.4);">Enterprise: 25+ operators, $2,500 / mo flat (unlimited)</span>
+    <span class="badge">First 30 days free on every new kit</span>
+    <span class="badge warn">No multi-year contracts</span>
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">10</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 11. ROI                                                      -->
+<!-- ============================================================ -->
+<section class="slide" data-title="ROI">
+  <p class="kicker">Show me the money</p>
+  <h2>Pays for itself in <span class="accent">one save</span>.</h2>
+  <table>
+    <thead>
+      <tr><th>Cost</th><th class="num">Amount</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Glasses kit (one-time, one operator)</td><td class="num">$1,495</td></tr>
+      <tr><td>Subscription · 12 months</td><td class="num">$1,188</td></tr>
+      <tr><td><strong>Year-1 total per operator</strong></td><td class="num"><strong>$2,683</strong></td></tr>
+    </tbody>
+  </table>
+
+  <table style="margin-top:1.5em;">
+    <thead>
+      <tr><th>What it can save in one season</th><th class="num">Typical $</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>One avoided re-grade on a riffle/pool</td><td class="num">$8,000+</td></tr>
+      <tr><td>Half-day saved on as-built paperwork × 10 jobs</td><td class="num">$4,000</td></tr>
+      <tr><td>Less surveyor re-visits (1–2 per project)</td><td class="num">$3,000+</td></tr>
+      <tr><td>Faster crew (not waiting on tape-and-stake checks)</td><td class="num">$5,000+</td></tr>
+      <tr><td><strong>Conservative season savings</strong></td><td class="num green"><strong>$20,000</strong></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="margin-top:1.5em;">
+    <strong>Payback math:</strong> One avoided re-grade in the first season covers the kit, the year of subscription, and leaves <span class="green">$5,000+ on the table</span>. Everything after that is gravy. <strong>Enterprise (25+ ops):</strong> at 50 operators, $2,500/mo flat saves you <span class="green">$2,450/mo</span> vs. per-seat pricing.
+  </div>
+  <div class="footer"><span>GradeSight</span><span class="pgnum">11</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 12. WHAT'S IN THE BOX / NEXT STEP                           -->
+<!-- ============================================================ -->
+<section class="slide" data-title="Get started">
+  <p class="kicker">Easy start</p>
+  <h2>Try it on your next project.</h2>
+  <div class="row cols-2" style="margin-top:1em;">
+    <div>
+      <h3>Pilot offer</h3>
+      <ul>
+        <li>1 glasses kit, 1 operator</li>
+        <li>30-day free trial of the app</li>
+        <li>We come out for setup &amp; the first day on-site</li>
+        <li>If it doesn't earn its keep, send the kit back</li>
+      </ul>
+      <p style="margin-top:1em;color:#cfc9bc;">
+        We're not asking you to bet the company on this. Run it on one excavator for a month and decide.
+      </p>
+    </div>
+    <div>
+      <h3>What you need on your end</h3>
+      <ul>
+        <li>An RTK receiver you already use (Leidos, Trimble, Topcon, Emlid, anything NMEA)</li>
+        <li>A phone or tablet in the cab (for the GPS bridge)</li>
+        <li>Cell coverage at the site (or a hotspot in the truck)</li>
+        <li>Design file with target depths (we'll help convert if needed)</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-top:2em;display:flex;gap:1em;align-items:center;">
+    <div style="background:#ffd66b;color:#0a0d0c;padding:1em 1.6em;border-radius:10px;font-weight:800;font-size:1.2rem;">
+      Want a demo on your jobsite?
+    </div>
+    <div style="font-size:1.2rem;color:#cfc9bc;">Email <span class="accent">clare@gradesight.app</span></div>
+  </div>
+  <div class="footer"><span>GradeSight by Clare</span><span class="pgnum">12</span></div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" title="Previous (←)">‹</button>
+  <button id="next" title="Next (→)">›</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  function show(n) {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+  }
+  document.getElementById('next').addEventListener('click', () => show(i + 1));
+  document.getElementById('prev').addEventListener('click', () => show(i - 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') show(i + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(i - 1);
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+  });
+  // Click anywhere advances (except on buttons)
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    show(i + 1);
+  });
+</script>
+
+</body>
+</html>

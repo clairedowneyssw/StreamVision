@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GradeSight — One Sheet</title>
+<style>
+  @page { size: letter; margin: 0.5in; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: #1a1a1a;
+    background: white;
+    font-size: 11pt;
+    line-height: 1.4;
+  }
+  .page { padding: 0; }
+  header {
+    border-bottom: 3px solid #d4a017;
+    padding-bottom: 0.6em;
+    margin-bottom: 1em;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  header .logo { font-size: 28pt; font-weight: 900; letter-spacing: -0.02em; }
+  header .logo .dot { color: #2e9d5e; }
+  header .tag { font-size: 10pt; color: #666; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 700; }
+  h2 {
+    font-size: 22pt; font-weight: 900; line-height: 1.05;
+    margin: 0.4em 0 0.3em;
+  }
+  h2 em { color: #d4a017; font-style: normal; }
+  h3 {
+    font-size: 11pt; text-transform: uppercase; letter-spacing: 0.12em;
+    color: #d4a017; font-weight: 800; margin-top: 1.1em; margin-bottom: 0.4em;
+  }
+  p { margin-bottom: 0.6em; }
+  ul { padding-left: 1.2em; margin-bottom: 0.6em; }
+  li { margin-bottom: 0.2em; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; }
+  .box {
+    border: 1.5px solid #d4a017; border-radius: 6px;
+    padding: 0.7em 0.9em;
+    background: #fff8e7;
+  }
+  .price {
+    border: 1.5px solid #ddd; border-radius: 6px;
+    padding: 0.9em; text-align: left;
+  }
+  .price.featured { border-color: #d4a017; background: #fff8e7; }
+  .price .num { font-size: 22pt; font-weight: 900; line-height: 1; }
+  .price .per { color: #666; font-size: 10pt; }
+  .hud-mock {
+    background: #0a0d0c; color: #5dffa8;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 9pt; font-weight: 700;
+    padding: 0.6em 0.9em; border-radius: 4px;
+    margin: 0.3em 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 0.4em; }
+  th, td { padding: 0.35em 0.5em; border-bottom: 1px solid #eee; text-align: left; }
+  th { background: #f7f1dc; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.1em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  footer {
+    margin-top: 1.4em; padding-top: 0.8em; border-top: 1px solid #eee;
+    font-size: 9pt; color: #666; display: flex; justify-content: space-between;
+  }
+  .stamp {
+    background: #2e9d5e; color: white; padding: 0.2em 0.6em; border-radius: 3px;
+    font-size: 9pt; font-weight: 700; letter-spacing: 0.05em;
+    display: inline-block;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo"><span class="dot">●</span> GradeSight</div>
+    <div class="tag">Stream Restoration HUD · One Sheet</div>
+  </header>
+
+  <h2>Dig it right. <em>The first time.</em></h2>
+  <p style="font-size:12pt;">
+    Survey-grade depth in your operator's field of view. No flags. No tape. No guessing.
+    Works with the RTK GPS you already own.
+  </p>
+
+  <div class="row" style="margin-top:0.8em;">
+    <div>
+      <h3>What the operator sees</h3>
+      <div class="hud-mock">→ M04  12 o'clock 4.2 m  ·  3/12<br>Pool entrance · brg 47°</div>
+      <div class="hud-mock">✗ ↓ TOO HIGH  M04  ·  3/12<br>↓ DIG 18 cm  (+0.18 m)</div>
+      <div class="hud-mock">✓ ON GRADE  M04  ·  3/12<br>Δ +0.012 m   HOLD  🔔 ding</div>
+      <div class="hud-mock">✗ ↑ TOO DEEP  M04  ·  3/12<br>↑ FILL 12 cm  (-0.12 m)</div>
+    </div>
+    <div>
+      <h3>How it works</h3>
+      <ol style="padding-left:1.4em;">
+        <li>Upload your dig points (CSV or GeoJSON)</li>
+        <li>Pair your RTK over Bluetooth</li>
+        <li>Dig until it dings</li>
+      </ol>
+
+      <h3>Why it pays</h3>
+      <ul>
+        <li>One avoided re-grade ≈ <strong>$8,000+</strong></li>
+        <li>As-built CSV writes itself — saves a day per job</li>
+        <li>Fewer surveyor re-visits</li>
+        <li>RTK fix-quality warnings — won't trust a bad number</li>
+      </ul>
+
+      <div class="box" style="margin-top:0.8em;">
+        <strong style="color:#d4a017;">Conservative season savings:</strong>
+        <strong>$20,000+</strong> per operator vs. <strong>$2,683</strong> year-one cost.
+      </div>
+    </div>
+  </div>
+
+  <h3>Pricing</h3>
+  <div class="row" style="grid-template-columns: 1fr 1fr 1fr; gap: 0.6em;">
+    <div class="price">
+      <div class="num">$1,495</div>
+      <div class="per">per kit · one-time</div>
+      <div style="font-size:9.5pt;margin-top:0.3em;">
+        Glasses, RTK Bluetooth bridge, hard case, half-day setup &amp; training, 1-yr warranty
+      </div>
+    </div>
+    <div class="price featured">
+      <div class="num">$99 <span style="font-size:11pt;font-weight:600;">/ mo</span></div>
+      <div class="per">per active operator</div>
+      <div style="font-size:9.5pt;margin-top:0.3em;">
+        App, cloud sync, as-builts, voice cues, updates &amp; support. Pause any month unused.
+      </div>
+    </div>
+    <div class="price" style="border-color:#2e9d5e;background:#eaf7ef;">
+      <div class="num">$2,500 <span style="font-size:11pt;font-weight:600;">/ mo</span></div>
+      <div class="per">enterprise · 25+ operators</div>
+      <div style="font-size:9.5pt;margin-top:0.3em;">
+        Flat rate, unlimited operators. Adds 50% off at 50 ops, 75% off at 100. Big crews win.
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:0.4em;font-size:9.5pt;color:#666;">
+    Mid-size? <strong>Crew pack:</strong> 5 operators for $399/mo (≈ $79.80/op).
+  </div>
+
+  <div style="margin-top:0.8em;">
+    <span class="stamp">30 days free on every new kit</span>
+    &nbsp;
+    <span class="stamp" style="background:#d4a017;">No multi-year contracts</span>
+  </div>
+
+  <h3>Year-1 math (per operator)</h3>
+  <table>
+    <tr><td>Glasses kit (one-time)</td><td class="num">$1,495</td></tr>
+    <tr><td>App subscription · 12 months</td><td class="num">$1,188</td></tr>
+    <tr><td><strong>Total year-1</strong></td><td class="num"><strong>$2,683</strong></td></tr>
+    <tr><td><strong>Pays for itself if it prevents</strong></td><td class="num"><strong>1 re-grade</strong></td></tr>
+  </table>
+
+  <footer>
+    <div>Pilot it on one operator for 30 days. If it doesn't earn its keep, send it back.</div>
+    <div><strong>clare@gradesight.app</strong></div>
+  </footer>
+</div>
+</body>
+</html>

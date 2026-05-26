@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StreamVision — Excavator AR Glasses</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#08110d;color:#f4efe5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;overflow:hidden}
+body{font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.deck{width:100vw;height:100vh;position:relative;overflow:hidden}
+.slide{position:absolute;inset:0;padding:5vh 6vw;display:none;flex-direction:column;justify-content:center;background:linear-gradient(180deg,#08110d 0%,#0f1714 100%)}
+
+.kicker{text-transform:uppercase;letter-spacing:.18em;font-size:.78rem;color:#ffd873;font-weight:800;margin-bottom:.9em}
+h1{font-size:clamp(44px,6vw,80px);line-height:1.02;font-weight:900;letter-spacing:-.03em;margin-bottom:.4em}
+h2{font-size:clamp(30px,4vw,52px);line-height:1.1;font-weight:850;letter-spacing:-.02em;margin-bottom:.45em}
+h3{font-size:clamp(18px,2.2vw,26px);color:#ffd873;margin-bottom:.4em}
+p,li{font-size:clamp(17px,1.6vw,23px);color:#d7d2c6;line-height:1.5}
+ul{padding-left:1.3em}
+li{margin-bottom:.4em}
+.accent{color:#ffd873}
+.green{color:#79ffb5}
+.logo{display:flex;align-items:center;gap:.7em;font-weight:900;font-size:clamp(22px,2.4vw,36px);margin-bottom:.8em}
+.logo-mark{width:.9em;height:.9em;border-radius:16px;background:linear-gradient(135deg,#79ffb5,#2f8f64);box-shadow:0 0 20px rgba(121,255,181,.4)}
+.pill{display:inline-block;padding:6px 13px;border-radius:999px;border:1px solid rgba(121,255,181,.28);background:rgba(121,255,181,.08);color:#79ffb5;font-size:.82rem;font-weight:700;margin:.3em .3em 0 0}
+.callout{margin-top:1rem;padding:.9rem 1.1rem;border-left:4px solid #ffd873;background:rgba(255,216,115,.08);border-radius:8px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1.4rem;margin-bottom:.8rem}
+.card h3{font-size:clamp(16px,1.8vw,22px);margin-bottom:.3em}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.row{display:grid;gap:2vw}
+.cols-2{grid-template-columns:1fr 1fr;align-items:center}
+.footer{position:absolute;left:6vw;right:6vw;bottom:1rem;display:flex;justify-content:space-between;color:#716a5a;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.nav{position:fixed;right:1rem;bottom:1rem;display:flex;gap:8px;z-index:9}
+.nav button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;font-size:18px}
+.photo{border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px rgba(0,0,0,.35);background:#0e1411}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.scene{position:relative;width:100%;aspect-ratio:16/9;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 55px rgba(0,0,0,.4);background:linear-gradient(180deg,#809ab0 0%,#7c9e8a 22%,#52633d 37%,#6b4f32 57%,#49331c 78%,#2c2014 100%)}
+.scene::before{content:"";position:absolute;left:0;right:0;top:56%;height:6%;background:linear-gradient(180deg,#4b7080,#29414b);opacity:.9}
+.vignette{position:absolute;inset:0;box-shadow:inset 0 0 130px 26px rgba(0,0,0,.55)}
+.hud{position:absolute;top:8%;left:50%;transform:translateX(-50%);min-width:58%;max-width:74%;padding:13px 18px;border-radius:8px;background:rgba(6,30,17,.34);border:1px solid rgba(121,255,181,.2);color:#79ffb5;text-shadow:0 0 12px rgba(121,255,181,.5);font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1.4;font-size:clamp(12px,1.5vw,17px)}
+.hud .top{font-size:1.1em}
+.hud .warn{color:#ffd873}
+.badge{position:absolute;top:8%;right:6%;display:inline-block;padding:5px 11px;border-radius:999px;background:rgba(121,255,181,.13);border:1px solid rgba(121,255,181,.28);color:#79ffb5;font-weight:700;font-size:.72rem}
+.price{background:linear-gradient(180deg,#111916,#0b100e);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1.5rem;text-align:center;margin-bottom:.8rem}
+.price.featured{border-color:#ffd873;box-shadow:0 0 0 1px rgba(255,216,115,.3)}
+.num{font-size:clamp(34px,4vw,56px);font-weight:900;line-height:1;color:#fff}
+.small{font-size:.92rem;color:#a49d90}
+.table{width:100%;border-collapse:collapse;margin:.8rem 0}
+.table th,.table td{padding:.6rem .8rem;border-bottom:1px solid rgba(255,255,255,.1);text-align:left;font-size:clamp(14px,1.5vw,18px)}
+.table th{font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;color:#ffd873}
+.table td:last-child{text-align:right}
+.print-note{font-size:.85rem;color:#8f8778;margin-top:.5rem}
+.hero-visual{position:relative;width:100%;padding:0;overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.08);box-shadow:0 22px 60px rgba(0,0,0,.4);background:#0c100e;min-height:440px}
+.hero-visual>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.65) saturate(.85)}
+.hero-visual>svg{position:relative;z-index:2;width:100%;height:100%;display:block}
+.hero-badge{position:absolute;left:20px;top:20px;background:rgba(18,115,207,.92);color:#fff;padding:16px 24px;border-radius:0 0 22px 0;font-size:clamp(14px,1.5vw,18px);font-weight:700;z-index:3;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+.tablet-viz{background:#141c19;border-radius:16px;padding:1rem;display:flex;align-items:center;justify-content:center;min-height:220px}
+.tablet-svg{width:100%;max-width:640px}
+.glasses-overlay{position:relative;min-height:220px;border-radius:16px;overflow:hidden}
+.glasses-overlay>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(.85)}
+.glasses-overlay>svg{position:relative;z-index:2;width:100%;height:100%}
+.caption{font-size:.88rem;color:#ada696;margin-top:.4rem}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- Slide 1: Hero -->
+<section class="slide active">
+  <div class="logo"><span class="logo-mark"></span>StreamVision</div>
+  <div class="kicker">Eyes-Up Dig Guidance for Excavators</div>
+  <div style="margin:.15rem 0 .9rem;color:#79ffb5;font-weight:700;letter-spacing:.04em">StreamVision.AI</div>
+  <h1>Keep operators moving.<br><span class="accent">Cut rework.</span></h1>
+  <p style="max-width:700px">RTK-guided dig guidance in the operator's line of sight — so crews stop guessing and start digging right, the first time.</p>
+  <div style="margin-top:.9rem">
+    <span class="pill">Works with RTK/GPS</span>
+    <span class="pill">Prescription-ready</span>
+    <span class="pill">Auto-adjusts to light</span>
+    <span class="pill">Less rework</span>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>1/7</span></div>
+</section>
+
+<!-- Slide 2: The Problem -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>Flag gets knocked down. Operator climbs out to check. Day goes backwards.</h2>
+  <div class="row cols-2" style="margin-top:1.2rem">
+    <div class="card">
+      <h3>What crews deal with now</h3>
+      <ul>
+        <li>Flags buried, kicked out, or moved by mistake</li>
+        <li>Operator stops to re-check grade every few points</li>
+        <li>Foreman watches a screen instead of the cut</li>
+        <li>One bad cut = hours of rework and extra fuel</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The real cost</h3>
+      <ul>
+        <li>Avoidable re-grade on a single trench or slope can run <span class="green">$8,000+</span></li>
+        <li>Surveyor re-visits, machine time, schedule slip</li>
+        <li>Paperwork rebuilt from memory at end of day</li>
+        <li>Frustrated crews and slower overall production</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>This happens on every site, every week.</strong> StreamVision changes what's possible.</div>
+  <div class="footer"><span>StreamVision</span><span>2/7</span></div>
+</section>
+
+<!-- Slide 3: The Product -->
+<section class="slide">
+  <div class="kicker">The solution</div>
+  <h2>Grade guidance, right in the operator's line of sight.</h2>
+  <div class="row cols-2" style="margin-top:1.2rem">
+    <div>
+      <ul style="font-size:clamp(18px,1.8vw,24px)">
+        <li>Loads target points from your RTK file</li>
+        <li>Shows exactly how much to dig or fill</li>
+        <li>Ding confirms when you're on grade</li>
+        <li>RTK quality warning if data is unreliable</li>
+        <li>Job log writes itself as points are marked done</li>
+      </ul>
+      <div class="callout" style="margin-top:.9rem"><strong>Eyes up. Hands working. No guesswork.</strong></div>
+    </div>
+    <div class="scene">
+      <div class="hud">
+        <div class="top">✓ ON GRADE  M04  ·  3/12</div>
+        <div>Δ +0.012 m   HOLD<br>short-press = mark done</div>
+      </div>
+      <div class="badge">🔔 DING</div>
+      <div class="vignette"></div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>3/7</span></div>
+</section>
+
+<!-- Slide 4: Glasses Up Close -->
+<section class="slide">
+  <div class="kicker">What the operator sees</div>
+  <h2>Target ahead. Dig 18 cm. Done.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="scene">
+      <div class="hud">
+        <div class="top">→ M04  12 o'clock  4.2 m  ·  3/12</div>
+        <div>Target zone · brg 47°</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+    <div>
+      <h3>Approach mode</h3>
+      <p>Operator sees direction, distance, and which point is next — without looking away from the work.</p>
+    </div>
+  </div>
+  <div class="row cols-2" style="margin-top:1rem;gap:1.2rem">
+    <div class="scene">
+      <div class="hud"><div class="top">✗ ↓ TOO HIGH  M04  ·  3/12</div><div>↓ DIG 18 cm  (+0.18 m)</div></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="scene">
+      <div class="hud">
+        <div class="top">✗ ↑ TOO DEEP  M04  ·  3/12</div>
+        <div>↑ FILL 12 cm  (-0.12 m)</div>
+        <div class="warn">⚠ vAcc ±8 cm</div>
+      </div>
+      <div class="vignette"></div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>4/7</span></div>
+</section>
+
+<!-- Slide 5: Tablet vs Glasses -->
+<section class="slide">
+  <div class="kicker">The comparison</div>
+  <h2>Why glasses beat a tablet in the cab.</h2>
+  <div class="compare" style="margin-top:1rem">
+    <div class="card">
+      <h3>Without StreamVision</h3>
+      <div class="tablet-viz">
+        <svg class="tablet-svg" viewBox="0 0 640 380" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tbBg" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#3d4f44"/><stop offset="1" stop-color="#222d28"/></linearGradient>
+            <linearGradient id="tglare" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect width="640" height="380" rx="18" fill="#121a16"/>
+          <rect x="28" y="28" width="584" height="324" rx="14" fill="url(#tbBg)"/>
+          <rect x="78" y="76" width="198" height="116" rx="10" fill="#d0d7d4"/>
+          <rect x="302" y="76" width="258" height="22" rx="7" fill="#d0d7d4" opacity=".8"/>
+          <rect x="302" y="116" width="220" height="22" rx="7" fill="#d0d7d4" opacity=".6"/>
+          <rect x="302" y="156" width="186" height="22" rx="7" fill="#d0d7d4" opacity=".42"/>
+          <path d="M108 278 C172 204, 258 178, 332 186 C416 194, 472 234, 540 292" fill="none" stroke="#7dd8ae" stroke-width="20" stroke-linecap="round"/>
+          <circle cx="108" cy="278" r="14" fill="#ff6464"/>
+          <circle cx="540" cy="292" r="14" fill="#79ffb5"/>
+          <path d="M188 36 L386 344" stroke="url(#tglare)" stroke-width="84" opacity=".44"/>
+          <rect x="200" y="244" width="132" height="40" rx="12" fill="#0c1510" opacity=".74"/>
+          <text x="216" y="270" fill="#ffffff" font-family="Arial" font-size="20">zoom / pan</text>
+          <circle cx="556" cy="102" r="34" fill="#ffffff" opacity=".09"/>
+          <text x="510" y="108" fill="#ffffff" font-family="Arial" font-size="18" opacity=".72">sun glare</text>
+        </svg>
+      </div>
+      <ul style="margin-top:.8rem">
+        <li>Eyes down, off the cut</li>
+        <li>Needs hand movement to check screen</li>
+        <li>More stop-start from foreman/radio</li>
+        <li>Glare, mud, vibration make it worse</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>With StreamVision</h3>
+      <div class="glasses-overlay">
+        <img src="https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1200&q=80" alt="excavation site" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.7) saturate(.82)">
+        <svg viewBox="0 0 640 380" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:2;padding:1rem">
+          <defs>
+            <filter id="sglow"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#79ffb5" flood-opacity=".44"/></filter>
+          </defs>
+          <rect x="60" y="88" rx="36" width="216" height="140" fill="rgba(16,18,20,.86)" stroke="#4a5153" stroke-width="7"/>
+          <rect x="364" y="88" rx="36" width="216" height="140" fill="rgba(16,18,20,.86)" stroke="#4a5153" stroke-width="7"/>
+          <path d="M276 158 L364 158" stroke="#282e2f" stroke-width="15" stroke-linecap="round"/>
+          <rect x="76" y="104" rx="26" width="184" height="108" fill="rgba(121,255,181,.09)"/>
+          <rect x="380" y="104" rx="26" width="184" height="108" fill="rgba(121,255,181,.09)"/>
+          <text x="92" y="146" fill="#f4fff9" font-family="Arial" font-size="15" opacity=".88">target ahead</text>
+          <text x="92" y="176" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="22" font-weight="800" filter="url(#sglow)">→ NEXT TARGET</text>
+          <text x="92" y="206" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="20" font-weight="700" filter="url(#sglow)">4.2 m  ·  12 o'clock</text>
+          <text x="396" y="146" fill="#ffffff" font-family="Arial" font-size="15" opacity=".9">RTK locked</text>
+          <text x="396" y="176" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="22" font-weight="800" filter="url(#sglow)">✓ ON GRADE</text>
+          <text x="396" y="206" fill="#ffffff" font-family="Arial" font-size="20">Δ +0.012 m</text>
+        </svg>
+      </div>
+      <ul style="margin-top:.8rem">
+        <li>Eyes up, both hands working</li>
+        <li>Target and grade stay in view</li>
+        <li>Faster confirmation, less radio chatter</li>
+        <li>Feels like operating, not babysitting a screen</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>The difference is simple:</strong> tablet pulls attention away from the cut. Glasses keep guidance where the work is.</div>
+  <div class="footer"><span>StreamVision</span><span>5/7</span></div>
+</section>
+
+<!-- Slide 6: The Job Log -->
+<section class="slide">
+  <div class="kicker">The bonus</div>
+  <h2>The job log writes itself.</h2>
+  <div class="row cols-2" style="margin-top:1.2rem">
+    <div>
+      <ul>
+        <li>Every completed point logs time, marker, target, actual, and RTK quality</li>
+        <li>End of day: download one CSV</li>
+        <li>Perfect for closeout, reporting, and proof of work</li>
+      </ul>
+      <div class="callout"><strong>No more rebuilding from memory.</strong> The crew does the work once. The record comes with it.</div>
+    </div>
+    <div class="card" style="font-family:Menlo,monospace;color:#8fffba;background:#0b100e;padding:1.2rem">
+      <div class="print-note">asbuilt-claire-2026-05-15.csv</div>
+      08:14,M01,12.450,12.452,+0.2,FIX,1.8<br>
+      08:31,M02,12.420,12.418,-0.2,FIX,1.7<br>
+      08:47,M03,12.400,12.405,+0.5,FIX,2.1<br>
+      09:02,M04,12.380,12.392,+1.2,FIX,1.9<br>
+      09:21,M05,12.360,12.358,-0.2,FIX,1.8<br>
+      09:38,M06,12.340,12.349,+0.9,FIX,2.0<br>
+      09:55,M07,12.320,12.319,-0.1,FIX,1.7<br>
+      10:12,M08,12.300,12.305,+0.5,FIX,1.9
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>6/7</span></div>
+</section>
+
+<!-- Slide 7: Pricing -->
+<section class="slide">
+  <div class="kicker">Pricing</div>
+  <h2>One avoided mistake pays for it.</h2>
+  <div class="row cols-2" style="margin-top:1rem;grid-template-columns:1.4fr 1fr;gap:1.4rem">
+    <div>
+      <table class="table">
+        <tr><th>Year-1 cost per operator</th><th></th></tr>
+        <tr><td>Hardware kit</td><td>$1,495</td></tr>
+        <tr><td>Software (12 months)</td><td>$1,188</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>$2,683</strong></td></tr>
+      </table>
+      <table class="table">
+        <tr><th>Conservative season savings</th><th></th></tr>
+        <tr><td>One avoided re-grade</td><td>$8,000+</td></tr>
+        <tr><td>Less surveyor re-visits</td><td>$3,000+</td></tr>
+        <tr><td>More production, less wait</td><td>$5,000+</td></tr>
+        <tr><td>Paperwork time saved</td><td>$4,000</td></tr>
+        <tr><td><strong>Total season upside</strong></td><td><strong>$20,000+</strong></td></tr>
+      </table>
+      <div class="callout"><strong>One save covers year one and still leaves money behind.</strong></div>
+    </div>
+    <div>
+      <div class="price featured">
+        <div class="small">Per operator / month</div>
+        <div class="num">$99</div>
+        <div class="small" style="margin-bottom:.8rem">pause unused months</div>
+        <ul style="list-style:none;padding:0;text-align:left">
+          <li>Dig guidance app</li>
+          <li>Voice + ding feedback</li>
+          <li>Job log exports</li>
+          <li>Updates + support</li>
+        </ul>
+      </div>
+      <div style="margin-top:.6rem"><span class="pill">Enterprise: $2,500/mo flat · unlimited ops</span></div>
+      <div style="margin-top:.5rem"><span class="pill">Crew pack: 5 operators for $399/mo</span></div>
+      <div style="margin-top:.4rem"><span class="pill">30-day trial on new kits</span></div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>7/7</span></div>
+</section>
+
+<!-- Slide 8: CTA -->
+<section class="slide">
+  <div class="kicker">Next step</div>
+  <h2>Put one kit on a real job.</h2>
+  <div class="row cols-2" style="margin-top:1.2rem">
+    <div>
+      <div class="card">
+        <h3>Pilot offer</h3>
+        <ul>
+          <li>1 glasses kit</li>
+          <li>30-day software trial</li>
+          <li>Onboarding + first jobsite setup</li>
+          <li>If it proves itself, expand it</li>
+          <li>If it doesn't — stop there, no pressure</li>
+        </ul>
+      </div>
+      <div class="print-note" style="margin-top:.8rem"><strong>Geoff Mohn</strong> — Founder/CEO<br><strong>Claire Mohn</strong> — CEO/Executive Director of Sales</div>
+      <div class="print-note" style="margin-top:.4rem">StreamVision.AI</div>
+    </div>
+    <div class="photo" style="height:340px;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 800 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="cBg" x1="0" x2="1"><stop stop-color="#0e1812"/><stop offset="1" stop-color="#08110d"/></linearGradient>
+          <filter id="cGlow"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#79ffb5" flood-opacity=".4"/></filter>
+        </defs>
+        <rect width="800" height="400" rx="22" fill="url(#cBg)"/>
+        <circle cx="186" cy="198" r="82" fill="#1c2d26"/>
+        <rect x="268" y="162" rx="16" width="110" height="48" fill="#79ffb5" opacity=".15" stroke="#79ffb5"/>
+        <text x="284" y="196" fill="#79ffb5" font-family="Menlo,monospace" font-size="19" font-weight="700" filter="url(#cGlow)">✓ ON GRADE</text>
+        <path d="M142 204 C180 118, 276 72, 388 86 C518 105, 626 198, 698 294" fill="none" stroke="#384442" stroke-width="20" stroke-linecap="round"/>
+        <path d="M592 244 L692 294" stroke="#28211a" stroke-width="26" stroke-linecap="round"/>
+        <path d="M672 290 L724 328" stroke="#28211a" stroke-width="24" stroke-linecap="round"/>
+        <text x="400" y="358" text-anchor="middle" fill="#d7d2c6" font-size="22" font-family="Arial">Eyes up. Less rework. Faster digging.</text>
+      </svg>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>8/7</span></div>
+</section>
+
+</div>
+<div class="nav">
+  <a href="iphone.html" style="display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 14px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;text-decoration:none;font:700 12px -apple-system,BlinkMacSystemFont,sans-serif;margin-right:8px">iPhone</a>
+  <button id="prev">‹</button>
+  <button id="next">›</button>
+</div>
+<script>
+(function(){
+  var slides = document.querySelectorAll('.slide');
+  var i = 0;
+  var N = slides.length;
+  function show(n) {
+    i = ((n % N) + N) % N;
+    for (var k = 0; k < N; k++) {
+      slides[k].style.display = (k === i) ? 'flex' : 'none'; slides[k].classList.toggle('active', k === i);
+    }
+  }
+  var nextBtn = document.getElementById('next');
+  var prevBtn = document.getElementById('prev');
+  if (nextBtn) nextBtn.onclick = function() { show(i + 1); };
+  if (prevBtn) prevBtn.onclick = function() { show(i - 1); };
+  document.onkeydown = function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(N - 1);
+  };
+  document.onclick = function(e) {
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    show(i + 1);
+  };
+  // swipe
+  var startX = 0;
+  document.ontouchstart = function(e) { startX = e.touches[0].clientX; };
+  document.ontouchend = function(e) {
+    var dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 50) show(dx < 0 ? i + 1 : i - 1);
+  };
+  show(0);
+})();
+</script>
+</body>
+</html>

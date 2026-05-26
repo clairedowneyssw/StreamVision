@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StreamVision — Keep Excavator Operators Eyes-Up</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;background:#08110d;color:#f4efe5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;overflow:hidden}body{font-size:18px;line-height:1.45}.deck{width:100vw;height:100vh;position:relative;overflow:hidden}.slide{position:absolute;inset:0;padding:4.8vh 6vw;display:none;flex-direction:column;justify-content:center;background:radial-gradient(circle at top right,rgba(44,94,73,.28),transparent 32%),linear-gradient(180deg,#08110d 0%,#0f1714 100%)}.slide.active{display:flex}.slide h1{font-size:clamp(40px,5.6vw,82px);line-height:1.02;font-weight:900;letter-spacing:-.03em;margin-bottom:.35em}.slide h2{font-size:clamp(30px,4vw,56px);line-height:1.06;font-weight:850;letter-spacing:-.02em;margin-bottom:.42em}.slide h3{font-size:clamp(20px,2vw,28px);color:#ffd873;margin-bottom:.35em}.slide p,.slide li{font-size:clamp(18px,1.55vw,24px);color:#d7d2c6}.slide ul{padding-left:1.25em}.slide li{margin-bottom:.32em}.kicker{text-transform:uppercase;letter-spacing:.18em;font-size:.82rem;color:#ffd873;font-weight:800;margin-bottom:1em}.accent{color:#ffd873}.green{color:#79ffb5}.muted{color:#9f9888}.row{display:grid;gap:2vw}.cols-2{grid-template-columns:1fr 1fr;align-items:center}.cols-3{grid-template-columns:1fr 1fr 1fr}.footer{position:absolute;left:6vw;right:6vw;bottom:1rem;display:flex;justify-content:space-between;color:#716a5a;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}.logo{display:flex;align-items:center;gap:.7em;font-weight:900;font-size:clamp(24px,2.4vw,40px)}.logo-mark{width:1em;height:1em;border-radius:18px;background:linear-gradient(135deg,#79ffb5,#2f8f64);box-shadow:0 0 24px rgba(121,255,181,.45)}.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:3vw;align-items:center}.pill{display:inline-block;padding:8px 14px;border-radius:999px;border:1px solid rgba(121,255,181,.28);background:rgba(121,255,181,.08);color:#79ffb5;font-size:.86rem;font-weight:700;margin:.4em .4em 0 0}.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1.5rem}.price{background:linear-gradient(180deg,#111916,#0b100e);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1.6rem}.price.featured{border-color:#ffd873;box-shadow:0 0 0 1px rgba(255,216,115,.3)}.num{font-size:clamp(34px,4vw,58px);font-weight:900;line-height:1;color:#fff}.small{font-size:1rem;color:#a49d90}.callout{margin-top:1rem;padding:1rem 1.2rem;border-left:4px solid #ffd873;background:rgba(255,216,115,.08);border-radius:8px}.nav{position:fixed;right:1rem;bottom:1rem;display:flex;gap:8px;z-index:9}.nav button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;cursor:pointer}.photo{border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px rgba(0,0,0,.34);background:#111}.photo img{display:block;width:100%;height:100%;object-fit:cover}.stack{display:grid;gap:1.2rem}.scene{position:relative;width:100%;aspect-ratio:16/9;border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.4);background:linear-gradient(180deg,#809ab0 0%,#7c9e8a 22%,#52633d 37%,#6b4f32 57%,#49331c 78%,#2c2014 100%)}.scene:before{content:"";position:absolute;left:0;right:0;top:56%;height:6%;background:linear-gradient(180deg,#4b7080,#29414b);opacity:.9}.scene:after{content:"";position:absolute;left:58%;right:-10%;bottom:-3%;height:36%;background:linear-gradient(135deg,#2a2417,#16110b);transform:rotate(-12deg);border-radius:20px;opacity:.58}.vignette{position:absolute;inset:0;box-shadow:inset 0 0 140px 28px rgba(0,0,0,.56)}.hud{position:absolute;top:8%;left:50%;transform:translateX(-50%);min-width:56%;max-width:72%;padding:14px 20px;border-radius:8px;background:rgba(6,30,17,.32);border:1px solid rgba(121,255,181,.18);color:#79ffb5;text-shadow:0 0 12px rgba(121,255,181,.5);font-family:Menlo,Consolas,monospace;font-weight:700;line-height:1.42}.hud .top{font-size:1.12em}.hud .warn{color:#ffd873;text-shadow:0 0 10px rgba(255,216,115,.42)}.glasses-hero{width:100%;max-width:580px;margin:auto}.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.2rem}.feature-box{padding:1rem;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}.feature-box h4{font-size:1rem;color:#ffd873;margin-bottom:.3rem}.feature-box p{font-size:.95rem}.compare{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}.caption{font-size:.95rem;color:#ada696;margin-top:.5rem}.badge{display:inline-block;padding:6px 12px;border-radius:999px;background:rgba(255,216,115,.12);border:1px solid rgba(255,216,115,.28);color:#ffd873;font-weight:700;font-size:.82rem}.table{width:100%;border-collapse:collapse;margin-top:1rem}.table th,.table td{padding:.7rem .8rem;border-bottom:1px solid rgba(255,255,255,.1);text-align:left}.table th{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:#ffd873}.table td:last-child{text-align:right;font-variant-numeric:tabular-nums}.print-note{font-size:.9rem;color:#8f8778;margin-top:.7rem}@media print{html,body{overflow:visible;height:auto}.nav{display:none}.deck{height:auto}.slide{position:relative!important;display:flex!important;page-break-after:always;min-height:100vh}}
+</style>
+</head>
+<body>
+<div class="deck">
+<section class="slide active">
+  <div class="hero-grid">
+    <div>
+      <div class="logo"><span class="logo-mark"></span>StreamVision</div>
+      <div class="kicker" style="margin-top:1.6rem">Keep Excavator Operators Eyes-Up</div>
+      <div style="margin:.2rem 0 1rem;color:#79ffb5;font-weight:700;letter-spacing:.04em">StreamVision.AI</div>
+      <h1>Keep operators moving.<br><span class="accent">Cut rework.</span></h1>
+      <p style="max-width:760px">StreamVision puts grade guidance in the operator's line of sight so crews spend less time checking screens, second-guessing cuts, and fixing avoidable mistakes.</p>
+      <div style="margin-top:1rem">
+        <span class="pill">Works with RTK/GPS</span>
+        <span class="pill">Prescription-ready</span>
+        <span class="pill">Auto-adjusts to light</span>
+        <span class="pill">Less rework</span>
+      </div>
+    </div>
+    <div class="photo" style="position:relative;min-height:520px;padding:0;overflow:hidden;background:#0c120f">
+      <img src="https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1600&q=80" alt="stream restoration site" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(.92) brightness(.72) blur(.4px)">
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,12,10,.18),rgba(7,12,10,.34) 45%,rgba(7,12,10,.62));"></div>
+      <svg viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:2;width:100%;height:100%;display:block">
+        <defs>
+          <filter id="shadow"><feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000" flood-opacity=".42"/></filter>
+          <filter id="hudGlow"><feDropShadow dx="0" dy="0" stdDeviation="7" flood-color="#79ffb5" flood-opacity=".45"/></filter>
+          <linearGradient id="frame" x1="0" x2="1"><stop stop-color="#1a1c1d"/><stop offset="1" stop-color="#090a0a"/></linearGradient>
+          <linearGradient id="lensTint" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#d8fff0" stop-opacity=".12"/><stop offset="1" stop-color="#79ffb5" stop-opacity=".07"/></linearGradient>
+          <clipPath id="leftLens"><rect x="165" y="256" rx="44" ry="44" width="340" height="220"/></clipPath>
+          <clipPath id="rightLens"><rect x="695" y="256" rx="44" ry="44" width="340" height="220"/></clipPath>
+        </defs>
+        <g filter="url(#shadow)">
+          <path d="M118 246 C214 171, 406 150, 536 199 L583 217 C608 226, 632 226, 657 217 L704 199 C834 150, 1026 171, 1122 246 L1070 306 C981 260, 840 258, 726 291 L666 308 C625 320, 615 320, 574 308 L514 291 C400 258, 259 260, 170 306 Z" fill="url(#frame)"/>
+          <rect x="145" y="236" rx="58" ry="58" width="380" height="260" fill="#101213" stroke="#35393a" stroke-width="12"/>
+          <rect x="675" y="236" rx="58" ry="58" width="380" height="260" fill="#101213" stroke="#35393a" stroke-width="12"/>
+          <path d="M525 343 L675 343" stroke="#252829" stroke-width="26" stroke-linecap="round"/>
+          <path d="M90 262 C28 228,16 143,77 92 L137 42 C170 14,204 -7,237 -45" fill="none" stroke="#16191a" stroke-width="28" stroke-linecap="round"/>
+          <path d="M1110 262 C1172 228,1184 143,1123 92 L1063 42 C1030 14,996 -7,963 -45" fill="none" stroke="#16191a" stroke-width="28" stroke-linecap="round"/>
+          <rect x="165" y="256" rx="44" width="340" height="220" fill="url(#lensTint)" stroke="#a2d8bf" stroke-opacity=".12"/>
+          <rect x="695" y="256" rx="44" width="340" height="220" fill="url(#lensTint)" stroke="#a2d8bf" stroke-opacity=".12"/>
+          <g clip-path="url(#leftLens)">
+            <rect x="165" y="256" width="340" height="220" fill="rgba(8,18,14,.10)"/>
+            <text x="206" y="332" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="34" font-weight="800" filter="url(#hudGlow)">→ M04    4.2 m</text>
+            <text x="206" y="378" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="30" font-weight="700" filter="url(#hudGlow)">DIG 18 cm</text>
+            <rect x="202" y="402" rx="16" width="204" height="48" fill="rgba(10,38,24,.28)" stroke="rgba(121,255,181,.36)"/>
+            <text x="228" y="434" fill="#dfffee" font-family="Arial" font-size="22">Target: stream bank</text>
+          </g>
+          <g clip-path="url(#rightLens)">
+            <text x="732" y="332" fill="#ffffff" font-family="Arial" font-size="36" opacity=".94">RTK LOCK</text>
+            <text x="732" y="380" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="31" font-weight="800" filter="url(#hudGlow)">✓ ON GRADE</text>
+            <text x="732" y="424" fill="#ffffff" font-family="Arial" font-size="26" opacity=".9">Δ +0.012 m</text>
+            <text x="732" y="458" fill="#ffd873" font-family="Arial" font-size="24" opacity=".95">mark done  •  next point</text>
+          </g>
+        </g>
+      </svg>
+      <div style="position:absolute;left:22px;top:22px;background:rgba(18,115,207,.92);color:#fff;padding:18px 28px;border-radius:0 0 24px 0;font-size:20px;font-weight:700;z-index:3;box-shadow:0 12px 28px rgba(0,0,0,.18)">AR Glasses for Excavators</div>
+    </div></div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>01</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What we are selling</div>
+  <h2>Not more screen time. Better operator flow.</h2>
+  <div class="compare" style="margin-top:1.2rem">
+    <div class="card">
+      <h3>The hardware</h3>
+      <ul>
+        <li>Lightweight smart glasses the operator can actually wear on a job site</li>
+        <li><strong>Prescription-ready</strong> for crew members with vision issues</li>
+        <li><strong>Auto-adjusting brightness / light response</strong> so the display stays readable from bright sun to shade</li>
+        <li>Works with gloves, noise, mud, and long days</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The software</h3>
+      <ul>
+        <li>Loads dig points, grade targets, or cut/fill targets from your file</li>
+        <li>Shows dig/fill instructions in real time</li>
+        <li>Marks completed targets and writes progress logs automatically</li>
+        <li>Voice + ding feedback so the operator does not have to stare at a screen</li>
+      </ul>
+    </div>
+  </div>
+  <div class="feature-grid">
+    <div class="feature-box"><h4>See the target</h4><p>The next point is in the glasses, not lost on a flag.</p></div>
+    <div class="feature-box"><h4>Hear the result</h4><p>Voice cues and a confirmation ding when you hit grade.</p></div>
+    <div class="feature-box"><h4>Trust the fix</h4><p>Warnings when RTK quality drops so crews don't grade to bad data.</p></div>
+    <div class="feature-box"><h4>Prove the work</h4><p>Progress and completion logs write themselves as the crew finishes each target.</p></div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>02</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Why this wins on real jobs</div>
+  <h2>Less rework. Less stopping. More dirt moved right.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="stack">
+      <div class="photo" style="height:290px"><img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80&auto=format&fit=crop" alt="field work"></div>
+      <div class="caption">Field context matters. This is built for actual outdoor work — sun, mud, slope, and crew movement.</div>
+    </div>
+    <div>
+      <ul style="font-size:clamp(20px,1.8vw,28px)">
+        <li>Flags get knocked down or buried.</li>
+        <li>Operators hate climbing out to re-check grade.</li>
+        <li>Project managers hate paying for rework.</li>
+        <li>Supervisors hate bad documentation.</li>
+        <li>Everybody hates losing a day to a bad cut.</li>
+      </ul>
+      <div class="callout"><strong>Conservative reality:</strong> one avoidable re-grade on a trench, pad, slope, or utility run can burn <span class="green">$8,000+</span> in machine time, labor, fuel, and schedule pain.</div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>03</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What the operator sees</div>
+  <h2>The grade is in the glasses.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="scene"><div class="hud"><div class="top">→ M04  12 o'clock 4.2 m  ·  3/12</div><div>Target zone · brg 47°</div></div><div class="vignette"></div></div>
+    <div>
+      <h3>Approach mode</h3>
+      <ul>
+        <li>The glasses point you to the next dig point.</li>
+        <li>Clock direction is easier for operators than survey talk.</li>
+        <li>Progress stays visible: 3 done, 9 to go.</li>
+      </ul>
+      <div class="callout">This is the product in one sentence: <strong>eyes up, fewer interruptions, more correct digging.</strong></div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>04</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What the operator sees</div>
+  <h2>Too high? Dig more.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="scene"><div class="hud"><div class="top">✗ ↓ TOO HIGH  M04  ·  3/12</div><div>↓ DIG 18 cm  (+0.18 m)</div></div><div class="vignette"></div></div>
+    <div>
+      <h3>Clear instruction</h3>
+      <ul>
+        <li>Arrow points the way the bucket should move.</li>
+        <li>The amount is exact, not vague.</li>
+        <li>Voice cue can say: “Dig eighteen centimeters.”</li>
+      </ul>
+      <p style="margin-top:1rem">No red/green gimmick — the glasses are monochrome, so we use big symbols, direct words, and numbers you can trust.</p>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>05</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What the operator sees</div>
+  <h2>On grade. <span class="green">Ding.</span></h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="scene"><div class="hud"><div class="top">✓ ON GRADE  M04  ·  3/12</div><div>Δ +0.012 m   HOLD<br>short-press = mark done</div></div><div class="badge" style="position:absolute;top:9%;right:7%;background:rgba(121,255,181,.14);border-color:rgba(121,255,181,.3);color:#79ffb5">🔔 DING</div><div class="vignette"></div></div>
+    <div>
+      <h3>Fast confirmation for the operator</h3>
+      <ul>
+        <li>Immediate confirmation when the target is hit</li>
+        <li>Short-press to mark the point done</li>
+        <li>Next point becomes active automatically</li>
+      </ul>
+      <div class="callout"><strong>That little ding matters.</strong> In a noisy machine, it tells the operator “you've got it” before doubt creeps in.</div>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>06</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">What the operator sees</div>
+  <h2>Too deep? Fill it.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div class="scene"><div class="hud"><div class="top">✗ ↑ TOO DEEP  M04  ·  3/12</div><div>↑ FILL 12 cm  (-0.12 m)</div><div class="warn">⚠ vAcc ±8 cm</div></div><div class="vignette"></div></div>
+    <div>
+      <h3>Confidence without false certainty</h3>
+      <ul>
+        <li>Shows when you went too deep</li>
+        <li>Warns when RTK quality is not good enough</li>
+        <li>Stops crews from confidently grading to bad data</li>
+      </ul>
+      <p style="margin-top:1rem">That quality warning is a credibility feature. It proves this system is not faking certainty.</p>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>07</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">More context</div>
+  <h2>Why glasses beat tablets in the cab.</h2>
+  <div class="compare" style="margin-top:1rem;align-items:start">
+    <div class="card">
+      <h3>Without StreamVision: looking down at a tablet</h3>
+      <div class="photo" style="height:250px;background:#131816;display:flex;align-items:center;justify-content:center;padding:1rem;position:relative;overflow:hidden">
+        <svg viewBox="0 0 720 420" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gTabBg" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#425448"/><stop offset="1" stop-color="#24312b"/></linearGradient>
+            <linearGradient id="gGlare" x1="0" x2="1"><stop stop-color="#ffffff" stop-opacity=".55"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+          </defs>
+          <rect width="720" height="420" rx="20" fill="#151c18"/>
+          <rect x="38" y="38" width="644" height="344" rx="16" fill="url(#gTabBg)"/>
+          <rect x="90" y="88" width="224" height="126" rx="12" fill="#d8ddd9"/>
+          <rect x="340" y="88" width="290" height="24" rx="8" fill="#d8ddd9" opacity=".78"/>
+          <rect x="340" y="128" width="246" height="24" rx="8" fill="#d8ddd9" opacity=".56"/>
+          <rect x="340" y="168" width="208" height="24" rx="8" fill="#d8ddd9" opacity=".38"/>
+          <path d="M118 311 C188 224,286 195,367 205 C448 215,512 254,598 319" fill="none" stroke="#7fd8ae" stroke-width="22" stroke-linecap="round"/>
+          <circle cx="119" cy="311" r="16" fill="#ff6767"/>
+          <circle cx="599" cy="319" r="16" fill="#79ffb5"/>
+          <path d="M210 40 L410 382" stroke="url(#gGlare)" stroke-width="96" opacity=".5"/>
+          <rect x="224" y="272" width="148" height="46" rx="14" fill="#0d1511" opacity=".78"/>
+          <text x="246" y="302" fill="#ffffff" font-family="Arial" font-size="24">zoom / pan</text>
+          <circle cx="614" cy="118" r="40" fill="#ffffff" opacity=".11"/>
+          <text x="566" y="124" fill="#ffffff" font-family="Arial" font-size="22" opacity=".76">sun glare</text>
+        </svg>
+      </div>
+      <ul style="margin-top:1rem">
+        <li>Operator looks down instead of at the cut</li>
+        <li>Needs one hand and extra motion to check position</li>
+        <li>More stop-start rhythm with foreman, stakes, or radio</li>
+        <li>Glare, mud, and vibration make the screen even worse</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>With StreamVision: guidance in the glasses</h3>
+      <div class="photo" style="height:250px;position:relative;background:#0e1411;overflow:hidden">
+        <img src="https://images.unsplash.com/photo-1511884642898-4c92249e20b6?auto=format&fit=crop&w=1200&q=80" alt="stream work view" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.74) saturate(.9)">
+        <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,10,.12),rgba(8,12,10,.34));"></div>
+        <svg viewBox="0 0 720 420" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="position:relative;z-index:2">
+          <defs>
+            <filter id="gGlow2"><feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#79ffb5" flood-opacity=".42"/></filter>
+          </defs>
+          <rect x="72" y="100" rx="38" width="242" height="154" fill="rgba(18,20,21,.84)" stroke="#555b5d" stroke-width="8"/>
+          <rect x="406" y="100" rx="38" width="242" height="154" fill="rgba(18,20,21,.84)" stroke="#555b5d" stroke-width="8"/>
+          <path d="M314 176 L406 176" stroke="#2f3435" stroke-width="16" stroke-linecap="round"/>
+          <rect x="92" y="118" rx="28" width="202" height="118" fill="rgba(121,255,181,.10)"/>
+          <rect x="426" y="118" rx="28" width="202" height="118" fill="rgba(121,255,181,.10)"/>
+          <text x="113" y="162" fill="#f4fff9" font-family="Arial" font-size="18" opacity=".9">target ahead</text>
+          <text x="113" y="194" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="25" font-weight="800" filter="url(#gGlow2)">→ NEXT TARGET</text>
+          <text x="113" y="225" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="21" font-weight="700" filter="url(#gGlow2)">4.2 m  ·  12 o'clock</text>
+          <text x="447" y="162" fill="#ffffff" font-family="Arial" font-size="18" opacity=".92">RTK locked</text>
+          <text x="447" y="194" fill="#79ffb5" font-family="Menlo,Consolas,monospace" font-size="25" font-weight="800" filter="url(#gGlow2)">✓ ON GRADE</text>
+          <text x="447" y="225" fill="#ffffff" font-family="Arial" font-size="22">Δ +0.012 m</text>
+        </svg>
+      </div>
+      <ul style="margin-top:1rem">
+        <li>Operator keeps eyes up and both hands working</li>
+        <li>Target, distance, and grade stay in the line of sight</li>
+        <li>Faster confirmation with less radio chatter</li>
+        <li>Feels like operating smoothly, not babysitting a screen</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout"><strong>The sales point is simple:</strong> every time the operator looks down at a tablet, work flow breaks. StreamVision keeps guidance where the work is happening.</div>
+  <div class="footer"><span>StreamVision</span><span>08</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">The bonus</div>
+  <h2>The record gets captured automatically.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div>
+      <ul>
+        <li>Every completed point logs time, marker ID, target, actual, and RTK quality.</li>
+        <li>End of day: download one CSV.</li>
+        <li>Perfect for closeout packages, internal reporting, and proof of work.</li>
+      </ul>
+      <div class="callout"><strong>No more rebuilding paperwork from memory.</strong> The crew does the work once and the record comes with it.</div>
+    </div>
+    <div class="card" style="font-family:Menlo,monospace;color:#8fffba;background:#0b100e">
+      <div class="muted" style="margin-bottom:.6rem">asbuilt-claire-2026-05-15.csv</div>
+      08:14,M01,12.450,12.452,+0.2,FIX,1.8<br>
+      08:31,M02,12.420,12.418,-0.2,FIX,1.7<br>
+      08:47,M03,12.400,12.405,+0.5,FIX,2.1<br>
+      09:02,M04,12.380,12.392,+1.2,FIX,1.9<br>
+      09:21,M05,12.360,12.358,-0.2,FIX,1.8<br>
+      09:38,M06,12.340,12.349,+0.9,FIX,2.0<br>
+      09:55,M07,12.320,12.319,-0.1,FIX,1.7<br>
+      10:12,M08,12.300,12.305,+0.5,FIX,1.9
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>09</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Pricing</div>
+  <h2>Simple pricing. Easy pilot.</h2>
+  <div class="row cols-3" style="margin-top:1rem">
+    <div class="price"><div class="small">One-time hardware kit</div><div class="num">$1,495</div><div class="small">glasses + bridge + setup</div><ul style="margin-top:1rem"><li>Smart glasses</li><li>Bluetooth RTK bridge</li><li>Case + setup support</li><li>Prescription-capable hardware path</li></ul></div>
+    <div class="price featured"><div class="small">Per operator</div><div class="num">$99<span style="font-size:1.2rem;font-weight:600">/mo</span></div><div class="small">pause unused months</div><ul style="margin-top:1rem"><li>Dig guidance app</li><li>Voice + ding feedback</li><li>Job log exports</li><li>Updates + support</li></ul></div>
+    <div class="price"><div class="small">Enterprise</div><div class="num">$2,500<span style="font-size:1.2rem;font-weight:600">/mo</span></div><div class="small">25+ operators · flat</div><ul style="margin-top:1rem"><li>Unlimited operators</li><li>Best fit for multi-crew companies</li><li>Saves fast at scale</li><li>No per-seat headache</li></ul></div>
+  </div>
+  <div style="margin-top:1rem"><span class="pill">Pilot-ready: 5 operators for $399/mo</span><span class="pill">30-day trial on new kits</span><span class="pill">No multi-year contract</span></div>
+  <div class="footer"><span>StreamVision</span><span>10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">ROI</div>
+  <h2>One avoided mistake pays for it.</h2>
+  <table class="table">
+    <tr><th>Year-1 cost per operator</th><th></th></tr>
+    <tr><td>Hardware kit</td><td>$1,495</td></tr>
+    <tr><td>Software subscription (12 months)</td><td>$1,188</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>$2,683</strong></td></tr>
+  </table>
+  <table class="table">
+    <tr><th>Conservative season savings</th><th></th></tr>
+    <tr><td>One avoided re-grade</td><td>$8,000+</td></tr>
+3,000+</td></tr>
+    <tr><td>Less waiting / more production</td><td>$5,000+</td></tr>
+    <tr><td>Paperwork / reporting time saved</td><td>$4,000</td></tr>
+    <tr><td><strong>Total season upside</strong></td><td><strong>$20,000+</strong></td></tr>
+  </table>
+  <div class="callout"><strong>Simple version:</strong> one save pays for year one and still leaves real money behind.</div>
+  <div class="footer"><span>StreamVision</span><span>11</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">Next step</div>
+  <h2>Start with one crew on one job.</h2>
+  <div class="row cols-2" style="margin-top:1rem">
+    <div>
+      <h3>Pilot offer</h3>
+      <ul>
+        <li>1 glasses kit</li>
+        <li>30-day software trial</li>
+        <li>Onboarding and first jobsite setup</li>
+        <li>If it proves itself, expand it. If not, stop there</li>
+      </ul>
+      <div class="print-note"><strong>Geoff Mohn</strong> — Founder/CEO<br><strong>Claire Mohn</strong> — CEO/Executive Director of Sales</div>
+      <div class="print-note" style="margin-top:.55rem">Website: <strong>StreamVision.AI</strong></div>
+    </div>
+    <div class="photo" style="height:330px;background:#0f1512;padding:1rem;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 820 420" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="bg" x1="0" x2="1"><stop stop-color="#112019"/><stop offset="1" stop-color="#0a0f0d"/></linearGradient></defs>
+        <rect width="820" height="420" rx="24" fill="url(#bg)"/>
+        <circle cx="186" cy="205" r="86" fill="#1f2d27"/>
+        <rect x="270" y="170" rx="18" width="116" height="52" fill="#79ffb5" opacity=".16" stroke="#79ffb5"/>
+        <text x="286" y="202" fill="#79ffb5" font-family="Menlo,monospace" font-size="20" font-weight="700">✓ ON GRADE</text>
+        <path d="M140 210 C180 120,280 70,390 84 C526 103,639 195,710 293" fill="none" stroke="#394640" stroke-width="22" stroke-linecap="round"/>
+        <path d="M610 250 L716 302" stroke="#2a241b" stroke-width="28" stroke-linecap="round"/>
+        <path d="M695 298 L747 335" stroke="#2a241b" stroke-width="26" stroke-linecap="round"/>
+        <text x="410" y="368" text-anchor="middle" fill="#d7d2c6" font-size="24" font-family="Arial">Eyes up. Less rework. Faster digging with StreamVision</text>
+      </svg>
+    </div>
+  </div>
+  <div class="footer"><span>StreamVision</span><span>12</span></div>
+</section>
+</div>
+<div class="nav"><a href="iphone.html" style="display:inline-flex;align-items:center;justify-content:center;min-width:52px;height:44px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;text-decoration:none;font:600 14px -apple-system,BlinkMacSystemFont,Segoe UI,Arial,sans-serif;margin-right:8px">iPhone</a><button id="prev">‹</button><button id="next">›</button></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;function show(n){i=(n+slides.length)%slides.length;slides.forEach((s,k)=>s.classList.toggle('active',k===i))}document.getElementById('next').onclick=()=>show(i+1);document.getElementById('prev').onclick=()=>show(i-1);document.addEventListener('keydown',e=>{if(['ArrowRight',' ','PageDown'].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1)});document.addEventListener('click',e=>{if(e.target.closest('button'))return;show(i+1)});
+</script>
+</body>
+</html>

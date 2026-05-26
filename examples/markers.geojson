@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "name": "example-stream-restoration-site",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.034640, 38.897700, 12.450] },
+      "properties": {
+        "id": "M01",
+        "label": "Riffle 1 - upstream",
+        "targetElevationM": 12.450,
+        "notes": "Top of riffle, set crest first"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.034720, 38.897740, 12.380] },
+      "properties": {
+        "id": "M02",
+        "label": "Pool 1",
+        "targetElevationM": 12.380,
+        "toleranceM": 0.075,
+        "notes": "Pool bottom, looser tolerance OK"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.034810, 38.897790, 12.290] },
+      "properties": {
+        "id": "M03",
+        "label": "Riffle 2 - crest",
+        "targetElevationM": 12.290
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.034900, 38.897830, 12.210] },
+      "properties": {
+        "id": "M04",
+        "label": "Step pool",
+        "targetElevationM": 12.210
+      }
+    }
+  ]
+}

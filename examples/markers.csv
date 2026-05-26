@@ -1,0 +1,5 @@
+id,lat,lon,targetElevationM,label,toleranceM,notes
+M01,38.897700,-77.034640,12.450,Riffle 1 - upstream,,Top of riffle set crest first
+M02,38.897740,-77.034720,12.380,Pool 1,0.075,Pool bottom looser tolerance OK
+M03,38.897790,-77.034810,12.290,Riffle 2 - crest,,
+M04,38.897830,-77.034900,12.210,Step pool,,
