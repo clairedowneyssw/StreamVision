@@ -1,0 +1,147 @@
+{
+  "app_name": "StreamVisionAR",
+  "personality": "5 Brutalist Mobile",
+  "personality_one_liner": "Rugged, high-contrast industrial utility built for sunlight, dirt, and sub-second field operation.",
+  "color": {
+    "surface": "#FFFFFF",
+    "onSurface": "#0F0F0F",
+    "surfaceSecondary": "#F2F2F2",
+    "onSurfaceSecondary": "#0F0F0F",
+    "surfaceTertiary": "#E6E6E6",
+    "onSurfaceTertiary": "#0F0F0F",
+    "surfaceInverse": "#0F0F0F",
+    "onSurfaceInverse": "#FFFFFF",
+    "brand": "#FF5A00",
+    "brandPrimary": "#FF5A00",
+    "onBrandPrimary": "#0F0F0F",
+    "brandSecondary": "#FFC800",
+    "onBrandSecondary": "#0F0F0F",
+    "brandTertiary": "#FFE4CC",
+    "onBrandTertiary": "#E65000",
+    "success": "#008A00",
+    "onSuccess": "#FFFFFF",
+    "warning": "#FFC800",
+    "onWarning": "#0F0F0F",
+    "error": "#D90000",
+    "onError": "#FFFFFF",
+    "info": "#0055FF",
+    "onInfo": "#FFFFFF",
+    "border": "#0F0F0F",
+    "borderStrong": "#0F0F0F",
+    "divider": "#CCCCCC"
+  },
+  "typography": {
+    "displayFontFamily": "Space Grotesk",
+    "textFontFamily": "IBM Plex Mono",
+    "scale": {
+      "sm": 12,
+      "base": 16,
+      "lg": 20,
+      "xl": 24,
+      "2xl": 32
+    }
+  },
+  "spacing": {
+    "rule": "Generous padding for glove-friendly use. Tight structural lines.",
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "2xl": 48,
+    "3xl": 64
+  },
+  "radius_tokens": {
+    "sm": 0,
+    "md": 0,
+    "lg": 0,
+    "pill": 999
+  },
+  "shadow_tier": "0",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": "false",
+    "do's": [
+      "Use 70-85% opaque surfaceInverse blocks for the AR HUD overlays instead of blur, ensuring high visibility over the camera feed without performance cost."
+    ],
+    "dont's": [
+      "Do not use blur filters. Brutalist style demands sharp, clear, opaque, or flat-tinted semi-transparent boxes."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-blur",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Project Dashboard",
+      "purpose": "A rugged, scannable index of all active construction sites and their sync status.",
+      "states": {
+        "loading": "Mono-spaced skeleton blocks loading with hard borders.",
+        "empty": "A large outlined construction cone icon and 'NO ACTIVE PROJECTS'.",
+        "error": "Yellow warning block with 'SYNC FAILED. CHECK CONNECTION'."
+      },
+      "layout": "Top toolbar with sync status. Card-based layout with thick borders. Each card has a drone-view photo placeholder, huge project title, location, and a pill showing 'Offline Cached' or 'Requires Sync'."
+    },
+    {
+      "name": "AR Live View",
+      "purpose": "The core AR camera feed HUD overlaying building models over reality.",
+      "states": {
+        "loading": "Targeting reticle spinner in the center.",
+        "empty": "Not applicable to AR view.",
+        "error": "Red 'TRACKING LOST' banner floating at the top with 'Point at textured surface' helper text."
+      },
+      "layout": "Full-screen camera feed. Screen-edge locked HUD. Top: Project/Location breadcrumb. Right side: Large, glove-friendly toggle column for Structural/MEP/Electrical layers. Bottom: Ghost-mode transparency slider (thick track) and a giant shutter button for capture."
+    },
+    {
+      "name": "Issue Punch List",
+      "purpose": "High-speed field data entry for logging structural anomalies or RFIs.",
+      "states": {
+        "loading": "Linear progress bar at top.",
+        "empty": "Large '+' icon and 'ALL CLEAR. NO PUNCH ITEMS.'",
+        "error": "Error banner: 'UNABLE TO UPLOAD PHOTOS'."
+      },
+      "layout": "High-contrast list view. Each row shows issue ID (e.g., #104), status block (Red for Open, Green for Closed), and location. Tapping opens a full-screen form with outlined inputs, labels above, and huge 'Mark Resolved' or 'Add Photo' buttons pinned to the bottom."
+    }
+  ],
+  "images": {
+    "dashboard_hero": {
+      "url": "https://images.pexels.com/photos/25461690/pexels-photo-25461690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "dark": "https://images.pexels.com/photos/25461690/pexels-photo-25461690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "alt": "Drone shot capturing aerial view of a large construction site"
+    },
+    "ar_calibration_placeholder": {
+      "url": "https://images.unsplash.com/photo-1721244654392-9c912a6eb236?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwyfHxhcmNoaXRlY3R1cmFsJTIwYmx1ZXByaW50JTIwQVJ8ZW58MHx8fHwxNzgyNDg3NDk1fDA&ixlib=rb-4.1.0&q=85",
+      "dark": "https://images.unsplash.com/photo-1721244654392-9c912a6eb236?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwyfHxhcmNoaXRlY3R1cmFsJTIwYmx1ZXByaW50JTIwQVJ8ZW58MHx8fHwxNzgyNDg3NDk1fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Architectural blueprint"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use 5 Brutalist Mobile personality. Zero border radii. Structural thick borders (1pt-2pt).",
+    "Font weights should never exceed 500. Hierarchy is achieved through size, not weight.",
+    "No indigo, purple, or blue hues. Stick strictly to the monochrome + safety orange/yellow palette.",
+    "For the AR Live View, prioritize a transparent, lightweight HUD locked to the edges. Do not obscure the center of the camera view.",
+    "Ensure all touch targets are a minimum of 48px, ideally 64px on the AR and Punch List screens to accommodate users wearing gloves.",
+    "Do not use glassmorphism blur in this app. Use flat, semi-transparent overlays (e.g., surfaceInverse at 80% opacity) for HUD elements to maintain performance and the rugged aesthetic.",
+    "Forms must use outlined text fields with labels placed ABOVE the input, never floating inside.",
+    "Any CTA must be pinned to the bottom using KeyboardAvoidingView, clear of the safe area."
+  ],
+  "haptics": {
+    "events": {
+      "ar_layer_toggle": "impactMedium",
+      "ghost_mode_slider_commit": "impactLight",
+      "photo_capture": "impactHeavy",
+      "issue_status_change": "notificationSuccess",
+      "tab_press": "selection"
+    }
+  }
+}
