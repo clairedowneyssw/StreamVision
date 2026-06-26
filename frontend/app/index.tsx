@@ -41,8 +41,8 @@ export default function Onboarding() {
 
         <View style={{ flex: 1 }} />
 
-        <Text style={styles.title}>BIM MODELS{"\n"}IN REAL SPACE.</Text>
-        <Text style={styles.sub}>Overlay structural, MEP & electrical models onto the job site. Built for sunlight, dust, and gloves.</Text>
+        <Text style={styles.title}>RESTORATION{"\n"}DESIGNS, ON SITE.</Text>
+        <Text style={styles.sub}>Overlay grading, drainage & habitat plans onto the streambank in real space. Built for sun, mud, and gloves.</Text>
 
         <Text style={styles.pickLabel}>SELECT YOUR ROLE</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.roleRow}>

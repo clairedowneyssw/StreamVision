@@ -14,7 +14,7 @@ import { WireframeModel, LayerState } from "@/src/components/WireframeModel";
 import { GhostSlider } from "@/src/components/GhostSlider";
 import { Button } from "@/src/components/ui";
 
-const FALLBACK = "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=940&q=80";
+const FALLBACK = "https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=940&q=80";
 
 export default function ARView() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -84,10 +84,10 @@ export default function ARView() {
   };
 
   const LAYER_DEFS: { key: keyof LayerState; label: string; color: string }[] = [
-    { key: "structural", label: "STR", color: colors.brand },
-    { key: "mep", label: "MEP", color: colors.info },
-    { key: "electrical", label: "ELE", color: colors.brandSecondary },
-    { key: "plumbing", label: "PLM", color: colors.success },
+    { key: "structural", label: "GRD", color: colors.brand },
+    { key: "mep", label: "DRN", color: colors.info },
+    { key: "electrical", label: "ERO", color: colors.brandSecondary },
+    { key: "plumbing", label: "HAB", color: colors.success },
   ];
 
   return (
@@ -181,7 +181,7 @@ export default function ARView() {
         <View style={styles.permGate}>
           <Ionicons name="camera-outline" size={48} color="#FFFFFF" />
           <Text style={styles.permTitle}>CAMERA REQUIRED</Text>
-          <Text style={styles.permHint}>Overlay BIM models onto the live job site.</Text>
+          <Text style={styles.permHint}>Overlay restoration grading & habitat designs onto the live streambank.</Text>
           <Button testID="grant-camera-button" label="GRANT CAMERA" icon="camera" onPress={requestPermission} style={{ marginTop: spacing.md }} />
         </View>
       )}

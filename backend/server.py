@@ -104,13 +104,13 @@ class ActivityCreate(BaseModel):
 
 # ----------------------- Seed -----------------------
 DEFAULT_LAYERS = [
-    {"key": "structural", "label": "STRUCTURAL", "color": "#FF5A00", "enabled": True},
-    {"key": "mep", "label": "MEP", "color": "#0055FF", "enabled": True},
-    {"key": "electrical", "label": "ELECTRICAL", "color": "#FFC800", "enabled": False},
-    {"key": "plumbing", "label": "PLUMBING", "color": "#008A00", "enabled": False},
+    {"key": "structural", "label": "GRADING", "color": "#FF5A00", "enabled": True},
+    {"key": "mep", "label": "DRAINAGE", "color": "#0055FF", "enabled": True},
+    {"key": "electrical", "label": "EROSION CTRL", "color": "#FFC800", "enabled": False},
+    {"key": "plumbing", "label": "HABITAT", "color": "#008A00", "enabled": False},
 ]
 
-SEED_VERSION = "v2-nature-restoration"
+SEED_VERSION = "v3-restoration-layers"
 
 SEED_PROJECTS = [
     {
