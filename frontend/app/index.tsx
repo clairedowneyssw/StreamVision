@@ -28,7 +28,7 @@ export default function Onboarding() {
   return (
     <View style={styles.root}>
       <Image
-        source={{ uri: "https://images.pexels.com/photos/25461690/pexels-photo-25461690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" }}
+        source={{ uri: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=940&q=80" }}
         style={styles.hero}
         contentFit="cover"
       />

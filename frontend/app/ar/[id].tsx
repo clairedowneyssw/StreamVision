@@ -14,7 +14,7 @@ import { WireframeModel, LayerState } from "@/src/components/WireframeModel";
 import { GhostSlider } from "@/src/components/GhostSlider";
 import { Button } from "@/src/components/ui";
 
-const FALLBACK = "https://images.unsplash.com/photo-1721244654392-9c912a6eb236?crop=entropy&cs=srgb&fm=jpg&q=85&w=940";
+const FALLBACK = "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=940&q=80";
 
 export default function ARView() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -158,7 +158,7 @@ export default function ARView() {
         {/* Bottom controls */}
         <View style={styles.bottom} pointerEvents="box-none">
           <View style={styles.sliderWrap}>
-            <GhostSlider testID="ghost-slider" value={ghost} onChange={setGhost} />
+            <GhostSlider testID="ar-ghost-slider" value={ghost} onChange={setGhost} />
           </View>
           <View style={styles.shutterRow} pointerEvents="box-none">
             <View style={styles.measureBox}>

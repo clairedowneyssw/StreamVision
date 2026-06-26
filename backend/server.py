@@ -110,74 +110,80 @@ DEFAULT_LAYERS = [
     {"key": "plumbing", "label": "PLUMBING", "color": "#008A00", "enabled": False},
 ]
 
+SEED_VERSION = "v2-nature-restoration"
+
 SEED_PROJECTS = [
     {
-        "name": "RIVERSIDE TOWER B",
-        "location": "Dock 7, Portland OR",
-        "code": "RVT-B",
+        "name": "WILLOW CREEK STREAM RESTORATION",
+        "location": "Blackfoot Reach, Missoula MT",
+        "code": "WCR",
         "status": "active",
         "sync_state": "synced",
         "progress": 62,
         "deviation_mm": 14.2,
-        "image_url": "https://images.pexels.com/photos/25461690/pexels-photo-25461690.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "open_issues": 3,
+        "image_url": "https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?auto=format&fit=crop&w=940&q=80",
     },
     {
-        "name": "NORTHGATE TRANSIT HUB",
-        "location": "Lot 14, Seattle WA",
-        "code": "NGH",
+        "name": "CEDAR WETLAND REGRADING",
+        "location": "Skagit Delta, Mount Vernon WA",
+        "code": "CWR",
         "status": "active",
         "sync_state": "offline_cached",
         "progress": 38,
         "deviation_mm": 22.8,
-        "image_url": "https://images.pexels.com/photos/1216544/pexels-photo-1216544.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "open_issues": 5,
+        "image_url": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=940&q=80",
     },
     {
-        "name": "HARBOR LOGISTICS WAREHOUSE",
-        "location": "Pier 3, Oakland CA",
-        "code": "HLW",
+        "name": "RIDGELINE CULVERT & BANK STABILIZATION",
+        "location": "Rogue River, Grants Pass OR",
+        "code": "RCB",
         "status": "active",
         "sync_state": "requires_sync",
         "progress": 81,
         "deviation_mm": 6.5,
-        "image_url": "https://images.pexels.com/photos/2219024/pexels-photo-2219024.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-        "open_issues": 1,
+        "image_url": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=940&q=80",
     },
 ]
 
 SEED_ISSUES = [
-    {"ref": "RFI-104", "title": "Column C4 offset from grid", "tag": "clash",
-     "status": "open", "location_label": "Level 3 / Grid C4",
-     "description": "AR overlay shows column 38mm east of planned grid line."},
-    {"ref": "WI-088", "title": "Duct run conflicts with beam", "tag": "wrong_install",
-     "status": "in_review", "location_label": "Level 2 / Mech Room",
-     "description": "Installed MEP duct clashes with structural beam B12."},
-    {"ref": "NR-051", "title": "Verify slab edge rebar spacing", "tag": "needs_review",
-     "status": "resolved", "location_label": "Level 1 / East Edge",
-     "description": "Field measure matched plan within tolerance."},
+    {"ref": "RFI-104", "title": "Riprap toe below planned scour line", "tag": "clash",
+     "status": "open", "location_label": "Outfall 2 / Sta 4+20",
+     "description": "AR overlay shows riprap toe set 0.4m below the planned scour line at the outfall."},
+    {"ref": "WI-088", "title": "Silt fence misaligned with cut grade", "tag": "wrong_install",
+     "status": "in_review", "location_label": "North Bank / Sta 2+10",
+     "description": "Installed silt fence does not follow the staked grade break — re-stake required."},
+    {"ref": "NR-051", "title": "Verify native seed mix coverage", "tag": "needs_review",
+     "status": "resolved", "location_label": "Floodplain Bench / East",
+     "description": "Field check matched the planting plan within tolerance."},
 ]
 
 SEED_ACTIVITY = [
-    {"kind": "pin", "author": "M. Alvarez", "message": "Pinned clash zone near C4 — needs PM review.", "anchor": "Grid C4"},
-    {"kind": "comment", "author": "J. Park", "message": "Confirmed duct rerouted on site, updating model.", "anchor": "Mech Room"},
-    {"kind": "sync", "author": "System", "message": "Model v4.2 cached for offline use (412 MB).", "anchor": ""},
+    {"kind": "pin", "author": "M. Alvarez", "message": "Pinned scour zone near outfall — needs hydrologist review.", "anchor": "Outfall 2"},
+    {"kind": "comment", "author": "J. Park", "message": "Confirmed bank regraded to 3:1, updating the cut model.", "anchor": "Bank Sta 4+20"},
+    {"kind": "sync", "author": "System", "message": "Drone survey scan cached for offline use (412 MB).", "anchor": ""},
 ]
 
 
 async def seed_if_empty():
-    if await db.projects.count_documents({}) > 0:
+    meta = await db.meta.find_one({"_id": "seed"})
+    if meta and meta.get("version") == SEED_VERSION:
         return
-    logger.info("Seeding StreamVisionAR sample data...")
+    logger.info("Seeding StreamVisionAR sample data (%s)...", SEED_VERSION)
+    await db.projects.delete_many({})
+    await db.issues.delete_many({})
+    await db.activity.delete_many({})
     for p in SEED_PROJECTS:
         proj = Project(**p, layers=[Layer(**l) for l in DEFAULT_LAYERS])
         await db.projects.insert_one(proj.dict())
-        for i, iss in enumerate(SEED_ISSUES):
+        for iss in SEED_ISSUES:
             issue = Issue(project_id=proj.id, author="Field User", **iss)
             await db.issues.insert_one(issue.dict())
+        open_count = await db.issues.count_documents({"project_id": proj.id, "status": {"$ne": "resolved"}})
+        await db.projects.update_one({"id": proj.id}, {"$set": {"open_issues": open_count}})
         for act in SEED_ACTIVITY:
             activity = Activity(project_id=proj.id, **act)
             await db.activity.insert_one(activity.dict())
+    await db.meta.update_one({"_id": "seed"}, {"$set": {"version": SEED_VERSION}}, upsert=True)
 
 
 # ----------------------- Routes -----------------------
