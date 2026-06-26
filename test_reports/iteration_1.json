@@ -1,0 +1,44 @@
+{
+  "summary": "First test pass for StreamVisionAR. Backend: 10/12 pytest cases pass; 2 failures expose a SEED DATA INCONSISTENCY (project.open_issues hardcoded to 3/5/1 while only 2 of 3 seeded issues per project are unresolved). API recompute logic is correct. Frontend: all critical mobile flows verified on 390x844 viewport — onboarding -> dashboard -> project detail -> AR HUD -> punch list -> new-issue create -> issue detail resolve -> feed comment all work end-to-end with proper testIDs.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "seed_if_empty()", "issue": "SEED DATA BUG: SEED_PROJECTS hardcodes open_issues=3/5/1 but only RFI-104 (open) and WI-088 (in_review) of the 3 seeded issues are unresolved -> actual unresolved count is 2 per project. First create/patch call correctly recomputes the counter, but the dashboard initially shows wrong OPEN badges (3/5/1) until any issue mutation happens. Fix: set open_issues=2 in SEED_PROJECTS, or recompute counts at end of seed_if_empty()."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "app/ar/[id].tsx", "issue": "Missing testID 'ar-ghost-slider' on the ghost-mode slider control (slider visually renders and shows 85% value, but the testID is absent from DOM). All other AR HUD testIDs present: ar-layer-structural, ar-layer-mep, ar-capture-button, ar-exit-button.", "testID": "ar-ghost-slider", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [],
+    "react_native_issues": [
+      {"component": "Multiple", "issue": "Console warning: 'props.pointerEvents is deprecated. Use style.pointerEvents' — non-blocking, future RN compatibility."}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_streamvisionar.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix seed data: in /app/backend/server.py, change SEED_PROJECTS open_issues values to match actual unresolved seeded issues (2 each), OR add a normalization pass at end of seed_if_empty() that recomputes open_issues per project from issues collection.",
+    "Add testID='ar-ghost-slider' to the ghost-mode slider element in /app/frontend/app/ar/[id].tsx (the orange horizontal bar showing 85%).",
+    "Optional: replace deprecated pointerEvents prop usages with style.pointerEvents to remove console warnings."
+  ],
+  "critical_code_review_comments": [
+    "server.py PATCH /api/issues/{id} correctly recomputes project.open_issues after status change — good.",
+    "All Mongo reads use projection {'_id': 0} — ObjectId leakage avoided.",
+    "POST /api/issues auto-generates ref as PL-00x via count_documents — naming collisions possible if any seeded ref already used PL- prefix, but currently seeds use RFI/WI/NR prefixes so safe.",
+    "Backend uses uuid string ids throughout — consistent with spec.",
+    "Frontend correctly reads EXPO_PUBLIC_BACKEND_URL for API calls (verified via working integration end-to-end)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_streamvisionar.py (new pytest suite, 12 cases)"
+  ],
+  "success_rate": {"backend": "83% (10/12, the 2 failures are seed-data bugs not API bugs)", "frontend": "~95% (all critical flows pass; 1 missing testID)"},
+  "seed_data_creation": "Created a few TEST_-prefixed issues and activity comments via API during testing; safe to leave (not destructive).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend tests live at /app/backend/tests/test_streamvisionar.py — run with: EXPO_PUBLIC_BACKEND_URL=<preview-url> pytest /app/backend/tests/ -v. Frontend bottom tabs are labeled SITES / PUNCH / FEED / FIELD (not ISSUES). Tab testIDs are not set on the bottom navigator; use page.get_by_text('PUNCH', exact=True) to navigate. AR view on web shows fallback image with full HUD overlay (acceptable per spec). MongoDB seed runs once on startup; if you change seed values, drop the projects collection or use a fresh DB_NAME to re-seed.",
+  "rca_of_issue": "Seed inconsistency RCA: server.py:113-147 SEED_PROJECTS dict has open_issues values (3,5,1) chosen for display variety, but the SEED_ISSUES loop (lines 175-177) only inserts 3 issues per project of which only 2 are non-resolved (RFI-104 open, WI-088 in_review, NR-051 resolved). The list_projects endpoint returns the stale stored value until create_issue or update_issue triggers a recompute via count_documents on lines 232 / 251. Mitigation: append an open-count recompute loop inside seed_if_empty after issue inserts, or set SEED_PROJECTS open_issues to 2."
+}
